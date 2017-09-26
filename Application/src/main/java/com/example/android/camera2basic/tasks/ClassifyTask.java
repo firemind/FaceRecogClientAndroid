@@ -63,7 +63,7 @@ public class ClassifyTask extends AsyncTask<Void, Integer, String> {
             output = new FileOutputStream(mFile);
             output.write(bytes);
 
-            MultipartUtility multipart = new MultipartUtility("http://192.168.0.228:3000/classify", "utf-8");
+            MultipartUtility multipart = new MultipartUtility("http://152.96.236.71:5000/classify", "utf-8");
             multipart.addFilePart("image", mFile);
             //multipart.addFormField("label", "mike");
             List<String> response = multipart.finish();
