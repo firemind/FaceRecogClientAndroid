@@ -19,15 +19,15 @@ package com.example.android.camera2basic;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
+import com.example.android.camera2basic.tasks.ClassifyTask;
 
 import java.io.File;
 
@@ -71,6 +71,7 @@ public class CameraActivity extends AppCompatActivity {
     private FotoapparatSwitcher fotoapparatSwitcher;
     private Fotoapparat frontFotoapparat;
     private Fotoapparat backFotoapparat;
+    private File mPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,10 +224,19 @@ public class CameraActivity extends AppCompatActivity {
     private void takePicture() {
         PhotoResult photoResult = fotoapparatSwitcher.getCurrentFotoapparat().takePicture();
 
-        photoResult.saveToFile(new File(
+        mPhoto = new File(
                 getExternalFilesDir("photos"),
-                "photo.jpg"
-        ));
+                "mPhoto.jpg"
+        );
+
+        photoResult.saveToFile(mPhoto)
+                .whenAvailable(new PendingResult.Callback<Void>() {
+            @Override
+            public void onResult(Void aVoid) {
+                ClassifyTask task = new ClassifyTask(CameraActivity.this, mPhoto);
+                task.execute();
+            }
+        });
 
         photoResult
                 .toBitmap(scaled(0.25f))
@@ -285,4 +295,7 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
+    public void showToast(final String text) {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
 }

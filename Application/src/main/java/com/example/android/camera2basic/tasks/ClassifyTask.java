@@ -23,14 +23,13 @@ import java.util.List;
  */
 
 public class ClassifyTask extends AsyncTask<Void, Integer, String> {
-    Camera2BasicFragment ma;
+    CameraActivity ma;
     protected ProgressDialog dlg;
-    public ClassifyTask(Camera2BasicFragment ma, Image image, File file) {
+    public ClassifyTask(CameraActivity ma, File file) {
         this.ma = ma;
 
-        dlg = new ProgressDialog(ma.getActivity());
-        dialog = new Dialog(ma.getActivity());
-        mImage = image;
+        dlg = new ProgressDialog(ma);
+        dialog = new Dialog(ma);
         mFile = file;
     }
 
@@ -38,7 +37,6 @@ public class ClassifyTask extends AsyncTask<Void, Integer, String> {
      * progress dialog to show user that the backup is processing.
      */
     private Dialog dialog;
-    private final Image mImage;
     /**
      * The file we save the image into.
      */
@@ -53,17 +51,8 @@ public class ClassifyTask extends AsyncTask<Void, Integer, String> {
 
     // This gets executed on a background thread
     protected String doInBackground(Void... arg) {
-
-        Log.e("ImageSaver", "test");
-        ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-        byte[] bytes = new byte[buffer.remaining()];
-        buffer.get(bytes);
-        FileOutputStream output = null;
         try {
-            output = new FileOutputStream(mFile);
-            output.write(bytes);
-
-            MultipartUtility multipart = new MultipartUtility("http://152.96.236.71:5000/classify", "utf-8");
+            MultipartUtility multipart = new MultipartUtility("http://192.168.1.127:5000/classify", "utf-8");
             multipart.addFilePart("image", mFile);
             //multipart.addFormField("label", "mike");
             List<String> response = multipart.finish();
@@ -74,16 +63,7 @@ public class ClassifyTask extends AsyncTask<Void, Integer, String> {
 
         } catch (IOException e) {
             e.printStackTrace();
-            return ("error classifying");
-        } finally {
-            mImage.close();
-            if (null != output) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            return ("io exception on classifying");
         }
 
         return "Downloaded hands";
@@ -99,8 +79,5 @@ public class ClassifyTask extends AsyncTask<Void, Integer, String> {
             dlg.dismiss();
         }
         ma.showToast(result);
-        ma.showNotification(result);
     }
-
-
 }

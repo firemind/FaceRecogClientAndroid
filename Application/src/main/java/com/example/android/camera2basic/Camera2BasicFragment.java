@@ -248,8 +248,8 @@ public class Camera2BasicFragment extends Fragment
 
             Log.e("ImageSaver", "test2");
 
-            ClassifyTask task = new ClassifyTask(Camera2BasicFragment.this, reader.acquireNextImage(), mFile);
-            task.execute();
+            //ClassifyTask task = new ClassifyTask(Camera2BasicFragment.this, mFile);
+            //task.execute();
             //mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
         }
 
