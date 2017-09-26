@@ -1,21 +1,15 @@
 package com.example.android.camera2basic.tasks;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.android.camera2basic.Camera2BasicFragment;
 import com.example.android.camera2basic.CameraActivity;
 import com.example.android.camera2basic.MultipartUtility;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 /**

@@ -24,9 +24,9 @@
         android:id="@+id/no_permission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
+        android:layout_gravity="center_horizontal|center"
         android:layout_marginBottom="50dp"
-        android:text="No Camera permission granted."
+        android:text="@string/no_camera_permission_granted"
         android:textSize="20sp"
         android:visibility="gone"
         tools:visibility="visible"/>
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
         android:layout_margin="8dp"
-        android:text="Switch camera"/>
+        android:text="@string/switch_camera"/>
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/torchSwitch"

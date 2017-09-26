@@ -99,7 +99,7 @@ public class CameraActivity extends AppCompatActivity {
     private void setupFotoapparat() {
         frontFotoapparat = createFotoapparat(LensPosition.FRONT);
         backFotoapparat = createFotoapparat(LensPosition.BACK);
-        fotoapparatSwitcher = FotoapparatSwitcher.withDefault(backFotoapparat);
+        fotoapparatSwitcher = FotoapparatSwitcher.withDefault(frontFotoapparat);
     }
 
     private void zoomSeekBar() {
