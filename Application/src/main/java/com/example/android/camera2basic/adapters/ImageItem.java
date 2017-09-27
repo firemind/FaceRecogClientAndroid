@@ -2,14 +2,15 @@ package com.example.android.camera2basic.adapters;
 
 import android.net.Uri;
 
+import java.io.File;
+
 /**
  * Created by viruch on 27.09.17.
  */
 
 public class ImageItem {
     private String imageTitle;
-    private Integer imageId;
-    private Uri uri;
+    private File file;
 
     public String getTitle() {
         return imageTitle;
@@ -19,19 +20,11 @@ public class ImageItem {
         this.imageTitle = android_version_name;
     }
 
-    public Integer getId() {
-        return imageId;
+    public File getFile() {
+        return file;
     }
 
-    public void setId(Integer android_image_url) {
-        this.imageId = android_image_url;
-    }
-
-    public Uri getURI() {
-        return uri;
-    }
-
-    public void setUri(Uri uri) {
-        this.uri = uri;
+    public void setFile(File file) {
+        this.file = file;
     }
 }

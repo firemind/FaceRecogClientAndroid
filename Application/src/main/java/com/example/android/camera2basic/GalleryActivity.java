@@ -1,6 +1,5 @@
 package com.example.android.camera2basic;
 
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -44,7 +43,7 @@ public class GalleryActivity extends AppCompatActivity {
             ImageItem imageItem = new ImageItem();
 
             imageItem.setTitle(aFile.getName());
-            imageItem.setUri(Uri.fromFile(aFile));
+            imageItem.setFile(aFile);
             list.add(imageItem);
         }
         return list;
