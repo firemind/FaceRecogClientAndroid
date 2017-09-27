@@ -20,4 +20,5 @@
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="switch_camera">Switch camera</string>
     <string name="no_camera_permission_granted">No Camera permission granted.</string>
+    <string name="gallery">Gallery</string>
 </resources>

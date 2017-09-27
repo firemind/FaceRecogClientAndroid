@@ -16,6 +16,7 @@
 
 package com.example.android.camera2basic;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -92,6 +93,7 @@ public class CameraActivity extends AppCompatActivity {
         takePictureOnClick();
         focusOnLongClick();
         switchCameraOnClick();
+        goToGalleryOnClick();
         toggleTorchOnSwitch();
         zoomSeekBar();
     }
@@ -154,6 +156,16 @@ public class CameraActivity extends AppCompatActivity {
                         : View.GONE
         );
         switchCameraOnClick(switchCameraButton);
+    }
+
+    private void goToGalleryOnClick() {
+        View goToGalleryButton = findViewById(R.id.goToGallery);
+        goToGalleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(CameraActivity.this, GalleryActivity.class));
+            }
+        });
     }
 
     private void switchCameraOnClick(View view) {
