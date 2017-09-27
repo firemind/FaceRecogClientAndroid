@@ -31,6 +31,10 @@ import android.widget.Toast;
 import com.example.android.camera2basic.tasks.ClassifyTask;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
@@ -235,10 +239,11 @@ public class CameraActivity extends AppCompatActivity {
 
     private void takePicture() {
         PhotoResult photoResult = fotoapparatSwitcher.getCurrentFotoapparat().takePicture();
+        File photoDir = getExternalFilesDir("photos");
 
         mPhoto = new File(
-                getExternalFilesDir("photos"),
-                "mPhoto.jpg"
+                photoDir,
+                getContinousFilename(photoDir)
         );
 
         photoResult.saveToFile(mPhoto)
@@ -261,6 +266,20 @@ public class CameraActivity extends AppCompatActivity {
                         imageView.setRotation(-result.rotationDegrees);
                     }
                 });
+    }
+
+    private String getContinousFilename(File directory) {
+        String[] filenames = directory.list();
+        int maxFileNumber = 0;
+        if (filenames != null){
+            for (String filename: filenames){
+                String nameOnlyNumber = filename.replaceAll("[^\\d]", "");
+                if (nameOnlyNumber.length() == 0)
+                    continue;
+                maxFileNumber = Math.max(Integer.parseInt(nameOnlyNumber), maxFileNumber);
+            }
+        }
+        return String.format(Locale.ENGLISH, "%04d.jpg", maxFileNumber + 1);
     }
 
     private void switchCamera() {
