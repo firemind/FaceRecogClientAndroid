@@ -9,20 +9,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.camera2basic.Face;
 import com.example.android.camera2basic.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by viruch on 27.09.17.
  */
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private ArrayList<ImageItem> galleryList;
+    private List<Face> galleryList;
     private Context context;
 
-    public MyAdapter(Context context, ArrayList<ImageItem> galleryList) {
+    public MyAdapter(Context context, List<Face> galleryList) {
         this.galleryList = galleryList;
         this.context = context;
     }
@@ -35,10 +36,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(MyAdapter.ViewHolder viewHolder, int i) {
-        viewHolder.title.setText(galleryList.get(i).getTitle());
+        String predictionPerson = galleryList.get(i).getPredictionPerson();
+        viewHolder.title.setText(predictionPerson == null ?
+                context.getResources().getString(R.string.not_predicted): predictionPerson);
         viewHolder.img.setScaleType(ImageView.ScaleType.CENTER_CROP);
         Picasso.with(context)
-                .load(galleryList.get(i).getFile())
+                .load(galleryList.get(i).getImageFile())
                 .resize(240,120)
                 .centerInside()
                 .into(viewHolder.img);

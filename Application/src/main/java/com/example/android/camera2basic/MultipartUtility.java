@@ -122,8 +122,8 @@ public class MultipartUtility {
      * status OK, otherwise an exception is thrown.
      * @throws IOException
      */
-    public List<String> finish() throws IOException {
-        List<String> response = new ArrayList<String>();
+    public String finish() throws IOException {
+        String response = "";
         writer.append(LINE_FEED).flush();
         writer.append("--" + boundary + "--").append(LINE_FEED);
         writer.close();
@@ -133,9 +133,9 @@ public class MultipartUtility {
         if (status == HttpURLConnection.HTTP_OK) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     httpConn.getInputStream()));
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
-                response.add(line);
+                response += line;
             }
             reader.close();
             httpConn.disconnect();

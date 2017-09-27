@@ -31,10 +31,6 @@ import android.widget.Toast;
 import com.example.android.camera2basic.tasks.ClassifyTask;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
@@ -76,7 +72,6 @@ public class CameraActivity extends AppCompatActivity {
     private FotoapparatSwitcher fotoapparatSwitcher;
     private Fotoapparat frontFotoapparat;
     private Fotoapparat backFotoapparat;
-    private File mPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,47 +234,24 @@ public class CameraActivity extends AppCompatActivity {
 
     private void takePicture() {
         PhotoResult photoResult = fotoapparatSwitcher.getCurrentFotoapparat().takePicture();
-        File photoDir = getExternalFilesDir("photos");
-
-        mPhoto = new File(
-                photoDir,
-                getContinousFilename(photoDir)
-        );
-
-        photoResult.saveToFile(mPhoto)
-                .whenAvailable(new PendingResult.Callback<Void>() {
-            @Override
-            public void onResult(Void aVoid) {
-                ClassifyTask task = new ClassifyTask(CameraActivity.this, mPhoto);
-                task.execute();
-            }
-        });
-
         photoResult
                 .toBitmap(scaled(0.25f))
                 .whenAvailable(new PendingResult.Callback<BitmapPhoto>() {
                     @Override
                     public void onResult(BitmapPhoto result) {
+                        FaceRepository repo = FaceRepository.getFaceRepository(CameraActivity.this);
+                        Face face = repo.create();
+                        face.saveImage(result.bitmap);
+                        ClassifyTask task = new ClassifyTask(CameraActivity.this, face,
+                                getResources().getString(R.string.default_server));
+                        task.execute();
+
                         ImageView imageView = (ImageView) findViewById(R.id.result);
 
                         imageView.setImageBitmap(result.bitmap);
                         imageView.setRotation(-result.rotationDegrees);
                     }
                 });
-    }
-
-    private String getContinousFilename(File directory) {
-        String[] filenames = directory.list();
-        int maxFileNumber = 0;
-        if (filenames != null){
-            for (String filename: filenames){
-                String nameOnlyNumber = filename.replaceAll("[^\\d]", "");
-                if (nameOnlyNumber.length() == 0)
-                    continue;
-                maxFileNumber = Math.max(Integer.parseInt(nameOnlyNumber), maxFileNumber);
-            }
-        }
-        return String.format(Locale.ENGLISH, "%04d.jpg", maxFileNumber + 1);
     }
 
     private void switchCamera() {

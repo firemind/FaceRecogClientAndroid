@@ -3,38 +3,39 @@ package com.example.android.camera2basic.tasks;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.example.android.camera2basic.CameraActivity;
+import com.example.android.camera2basic.Face;
 import com.example.android.camera2basic.MultipartUtility;
+import com.example.android.camera2basic.R;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by mike on 23.09.17.
  */
 
-public class ClassifyTask extends AsyncTask<Void, Integer, String> {
-    CameraActivity ma;
-    protected ProgressDialog dlg;
-    public ClassifyTask(CameraActivity ma, File file) {
+public class ClassifyTask extends AsyncTask<Void, Integer, ClassifyResponse> {
+    private CameraActivity ma;
+    private ProgressDialog dlg;
+    private Dialog dialog;
+    private Face face;
+    private final File image;
+    private final String serverAddress;
+    private ClassifyResponse classifyResponse;
+
+    public ClassifyTask(CameraActivity ma, Face face, String serverAddress) {
         this.ma = ma;
 
+        this.serverAddress = serverAddress;
         dlg = new ProgressDialog(ma);
         dialog = new Dialog(ma);
-        mFile = file;
+        this.face = face;
+        image = face.getImageFile();
     }
 
-    /**
-     * progress dialog to show user that the backup is processing.
-     */
-    private Dialog dialog;
-    /**
-     * The file we save the image into.
-     */
-    private final File mFile;
 
     @Override
     protected void onPreExecute() {
@@ -44,23 +45,20 @@ public class ClassifyTask extends AsyncTask<Void, Integer, String> {
     }
 
     // This gets executed on a background thread
-    protected String doInBackground(Void... arg) {
+    protected ClassifyResponse doInBackground(Void... arg) {
+        ClassifyResponse response;
         try {
-            MultipartUtility multipart = new MultipartUtility("http://192.168.1.127:5000/classify", "utf-8");
-            multipart.addFilePart("image", mFile);
+            MultipartUtility multipart = new MultipartUtility(serverAddress + "/classify", "utf-8");
+            multipart.addFilePart("image", image);
             //multipart.addFormField("label", "mike");
-            List<String> response = multipart.finish();
-            for(String s : response){
-                Log.e("ImageSaver", s);
-                return s;
-            }
-
+            response = new Gson().fromJson(multipart.finish(), ClassifyResponse.class);
         } catch (IOException e) {
             e.printStackTrace();
-            return ("io exception on classifying");
+            ClassifyResponse failed = new ClassifyResponse();
+            failed.errorMessage = "IO Exception";
+            return failed;
         }
-
-        return "Downloaded hands";
+        return response;
     }
 
     @Override
@@ -68,10 +66,21 @@ public class ClassifyTask extends AsyncTask<Void, Integer, String> {
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(ClassifyResponse result) {
         if (dlg.isShowing()) {
             dlg.dismiss();
         }
-        ma.showToast(result);
+
+        if (result.successful()) {
+            face.setPredictionPerson(result.label);
+            face.setPredictionScore(result.score);
+            face.setPredictionPersonImageUri(result.image);
+            face.save();
+            ma.showToast(face.getPredictionScore() + ": " + face.getPredictionPerson());
+        } else {
+            ma.showToast(result.errorMessage);
+        }
     }
+
 }
+
