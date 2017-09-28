@@ -2,6 +2,7 @@ package com.example.android.camera2basic.data;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
@@ -85,7 +86,11 @@ public class FaceRepository {
         return faces;
     }
 
-    public void save(Face face, Bitmap bmp){
+    public void save(Face face, Bitmap bitmap, int rotationDegrees){
+        Matrix m = new Matrix();
+        m.postRotate(rotationDegrees);
+        Bitmap corrected = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, false);
+
         File photo = new File(
                 photoDir,
                 getContinousFilename()
@@ -93,7 +98,7 @@ public class FaceRepository {
         try{
             photo.getParentFile().mkdirs();
             photo.createNewFile();
-            saveAsJpeg(bmp, photo);
+            saveAsJpeg(corrected, photo);
             face.setImageName(photo.getName());
             getAll().add(face);
             save();

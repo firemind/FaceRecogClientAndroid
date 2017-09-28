@@ -247,7 +247,7 @@ public class CameraActivity extends AppCompatActivity {
                     public void onResult(BitmapPhoto result) {
                         FaceRepository repo = FaceRepository.getFaceRepository(CameraActivity.this);
                         Face face = repo.create();
-                        face.saveImage(result.bitmap);
+                        face.saveImage(result.bitmap, -result.rotationDegrees);
 
                         ClassifyTask task = new ClassifyTask(CameraActivity.this, face,
                                 serverAddress);

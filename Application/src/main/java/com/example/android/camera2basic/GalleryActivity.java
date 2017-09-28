@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.android.camera2basic.adapters.MyAdapter;
 import com.example.android.camera2basic.data.Face;
@@ -27,13 +29,21 @@ public class GalleryActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_gallery);
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
         setupRecyclerView();
+
+        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.action_go_to_camera_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent cameraActivity = new Intent(GalleryActivity.this, CameraActivity.class);
+                startActivity(cameraActivity);
+            }
+        });
     }
 
     private void setupRecyclerView() {
@@ -62,7 +72,6 @@ public class GalleryActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 

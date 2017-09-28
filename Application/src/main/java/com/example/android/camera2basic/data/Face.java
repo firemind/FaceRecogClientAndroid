@@ -24,8 +24,8 @@ public class Face {
         repository.save();
     }
 
-    public void saveImage(Bitmap bitmap) {
-        repository.save(this, bitmap);
+    public void saveImage(Bitmap bitmap, int rotationDegrees) {
+        repository.save(this, bitmap, rotationDegrees);
     }
 
     public File getImageFile(){
