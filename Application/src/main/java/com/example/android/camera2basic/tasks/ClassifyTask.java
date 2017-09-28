@@ -71,11 +71,11 @@ public class ClassifyTask extends AsyncTask<Void, Integer, ClassifyResponse> {
         }
 
         if (result.successful()) {
-            face.setPredictionPerson(result.label);
+            face.setPredictionLabel(result.label);
             face.setPredictionScore(result.score);
-            face.setPredictionPersonImageUri(result.image);
+            face.setPredictionImagePath(result.image);
             face.save();
-            ma.showToast(face.getPredictionScore() + ": " + face.getPredictionPerson());
+            ma.showToast((int)(face.getPredictionScore() * 100) + "% : " + face.getPredictionLabel() + face.getPredictionImageUri());
         } else {
             ma.showToast(result.errorMessage);
         }

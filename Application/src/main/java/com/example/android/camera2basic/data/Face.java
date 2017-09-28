@@ -1,6 +1,7 @@
 package com.example.android.camera2basic.data;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import java.io.File;
 
@@ -11,9 +12,9 @@ import java.io.File;
 public class Face {
     private String imageName;
     private double predictionScore;
-    private String predictionPerson;
-    private String predictionPersonImageUri;
-    private String taggedPerson;
+    private String predictionLabel;
+    private String predictionImagePath;
+    private String taggedLabel;
     private transient FaceRepository repository;
 
     Face(FaceRepository repository){
@@ -44,28 +45,32 @@ public class Face {
         this.predictionScore = predictionScore;
     }
 
-    public String getPredictionPerson() {
-        return predictionPerson;
+    public String getPredictionLabel() {
+        return predictionLabel;
     }
 
-    public void setPredictionPerson(String predictionPerson) {
-        this.predictionPerson = predictionPerson;
+    public void setPredictionLabel(String predictionLabel) {
+        this.predictionLabel = predictionLabel;
     }
 
-    public String getPredictionPersonImageUri() {
-        return predictionPersonImageUri;
+    public Uri getPredictionImageUri() {
+        if (predictionImagePath == null)
+            return null;
+        return Uri.parse(repository.getServerAddress()).buildUpon()
+                .encodedPath(predictionImagePath)
+                .build();
     }
 
-    public void setPredictionPersonImageUri(String predictionPersonImageUri) {
-        this.predictionPersonImageUri = predictionPersonImageUri;
+    public void setPredictionImagePath(String predictionImagePath) {
+        this.predictionImagePath = predictionImagePath;
     }
 
-    public String getTaggedPerson() {
-        return taggedPerson;
+    public String getTaggedLabel() {
+        return taggedLabel;
     }
 
-    public void setTaggedPerson(String taggedPerson) {
-        this.taggedPerson = taggedPerson;
+    public void setTaggedLabel(String taggedLabel) {
+        this.taggedLabel = taggedLabel;
     }
 
     public FaceRepository getRepository() {

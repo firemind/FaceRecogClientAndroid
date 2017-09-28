@@ -1,10 +1,14 @@
 package com.example.android.camera2basic.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import com.example.android.camera2basic.SettingsActivity;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -27,17 +31,21 @@ public class FaceRepository {
     private File photoDir;
     private Gson gson;
     private List<Face> faces = null;
+    private String serverAddress;
 
-    private FaceRepository(File home) {
+    private FaceRepository(File home, String serverAddress) {
         this.repo = new File(home, "faces.json");
         this.photoDir = new File(home, "photos");
+        this.serverAddress = serverAddress;
         gson = new Gson();
     }
 
     @NonNull
     public static FaceRepository getFaceRepository(Context context) {
         File home = context.getExternalFilesDir("");
-        return new FaceRepository(home);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        String serverAddress = sharedPref.getString(SettingsActivity.KEY_PREF_SERVER_ADDRESS, "");
+        return new FaceRepository(home, serverAddress);
     }
 
     private void readFromFile() {
@@ -156,5 +164,9 @@ public class FaceRepository {
 
     public File getPhotoDir() {
         return photoDir;
+    }
+
+    public String getServerAddress() {
+        return serverAddress;
     }
 }

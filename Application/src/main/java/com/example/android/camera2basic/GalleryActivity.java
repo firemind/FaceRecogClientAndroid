@@ -1,19 +1,21 @@
 package com.example.android.camera2basic;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.android.camera2basic.adapters.MyAdapter;
+import com.example.android.camera2basic.adapters.FaceAdapter;
 import com.example.android.camera2basic.data.Face;
 import com.example.android.camera2basic.data.FaceRepository;
 
@@ -50,10 +52,10 @@ public class GalleryActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.image_gallery);
         recyclerView.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),2);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         List<Face> imageItems = prepareData();
-        MyAdapter adapter = new MyAdapter(getApplicationContext(), imageItems);
+        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), imageItems);
         recyclerView.setAdapter(adapter);
     }
 
