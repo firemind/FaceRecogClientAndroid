@@ -1,11 +1,14 @@
 package com.example.android.camera2basic;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.android.camera2basic.adapters.MyAdapter;
+import com.example.android.camera2basic.data.Face;
+import com.example.android.camera2basic.data.FaceRepository;
 
 import java.util.List;
 
@@ -14,6 +17,9 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         setContentView(R.layout.activity_gallery);
         setupRecyclerView();
     }

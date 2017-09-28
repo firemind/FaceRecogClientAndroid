@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.example.android.camera2basic.data.Face;
+import com.example.android.camera2basic.data.FaceRepository;
 import com.example.android.camera2basic.tasks.ClassifyTask;
 
 import io.fotoapparat.Fotoapparat;
@@ -77,8 +79,6 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         cameraView = (CameraView) findViewById(R.id.camera_view);
         hasCameraPermission = permissionsDelegate.hasCameraPermission();
@@ -199,7 +199,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private boolean canSwitchCameras() {
-        return frontFotoapparat.isAvailable() == backFotoapparat.isAvailable();
+        return frontFotoapparat.isAvailable() && backFotoapparat.isAvailable();
     }
 
     private Fotoapparat createFotoapparat(LensPosition position) {
@@ -250,7 +250,7 @@ public class CameraActivity extends AppCompatActivity {
                         face.saveImage(result.bitmap);
 
                         ClassifyTask task = new ClassifyTask(CameraActivity.this, face,
-                                getResources().getString(R.string.pref_default_server_address));
+                                serverAddress);
                         task.execute();
 
                         ImageView imageView = (ImageView) findViewById(R.id.result);

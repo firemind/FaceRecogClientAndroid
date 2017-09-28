@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.camera2basic.Face;
+import com.example.android.camera2basic.data.Face;
 import com.example.android.camera2basic.R;
 import com.squareup.picasso.Picasso;
 

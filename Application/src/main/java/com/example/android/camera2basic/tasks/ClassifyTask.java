@@ -5,9 +5,8 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import com.example.android.camera2basic.CameraActivity;
-import com.example.android.camera2basic.Face;
+import com.example.android.camera2basic.data.Face;
 import com.example.android.camera2basic.MultipartUtility;
-import com.example.android.camera2basic.R;
 import com.google.gson.Gson;
 
 import java.io.File;
