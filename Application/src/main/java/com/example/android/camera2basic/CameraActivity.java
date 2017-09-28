@@ -17,7 +17,9 @@
 package com.example.android.camera2basic;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.annotation.NonNull;
@@ -29,8 +31,6 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.example.android.camera2basic.tasks.ClassifyTask;
-
-import java.io.File;
 
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
@@ -77,6 +77,8 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         cameraView = (CameraView) findViewById(R.id.camera_view);
         hasCameraPermission = permissionsDelegate.hasCameraPermission();
@@ -234,6 +236,10 @@ public class CameraActivity extends AppCompatActivity {
 
     private void takePicture() {
         PhotoResult photoResult = fotoapparatSwitcher.getCurrentFotoapparat().takePicture();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        final String serverAddress = sharedPref.getString(SettingsActivity.KEY_PREF_SERVER_ADDRESS, "");
+
         photoResult
                 .toBitmap(scaled(0.25f))
                 .whenAvailable(new PendingResult.Callback<BitmapPhoto>() {
@@ -242,8 +248,9 @@ public class CameraActivity extends AppCompatActivity {
                         FaceRepository repo = FaceRepository.getFaceRepository(CameraActivity.this);
                         Face face = repo.create();
                         face.saveImage(result.bitmap);
+
                         ClassifyTask task = new ClassifyTask(CameraActivity.this, face,
-                                getResources().getString(R.string.default_server));
+                                getResources().getString(R.string.pref_default_server_address));
                         task.execute();
 
                         ImageView imageView = (ImageView) findViewById(R.id.result);

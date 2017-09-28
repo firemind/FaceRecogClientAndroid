@@ -21,6 +21,8 @@
     <string name="switch_camera">Switch camera</string>
     <string name="no_camera_permission_granted">No Camera permission granted.</string>
     <string name="gallery">Gallery</string>
-    <string name="default_server">http://192.168.1.127:5000</string>
+    <string name="pref_default_server_address">http://192.168.1.127:5000</string>
     <string name="not_predicted">Not predicted</string>
+    <string name="person">Person</string>
+    <string name="pref_server_address">Server Address</string>
 </resources>
