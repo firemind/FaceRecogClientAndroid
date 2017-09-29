@@ -16,16 +16,13 @@
 
 package com.example.android.camera2basic;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -36,15 +33,11 @@ import com.example.android.camera2basic.tasks.ClassifyTask;
 
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
-import io.fotoapparat.error.CameraErrorCallback;
-import io.fotoapparat.hardware.CameraException;
 import io.fotoapparat.parameter.LensPosition;
 import io.fotoapparat.parameter.ScaleType;
 import io.fotoapparat.parameter.update.UpdateRequest;
-import io.fotoapparat.photo.BitmapPhoto;
 import io.fotoapparat.preview.Frame;
 import io.fotoapparat.preview.FrameProcessor;
-import io.fotoapparat.result.PendingResult;
 import io.fotoapparat.result.PhotoResult;
 import io.fotoapparat.view.CameraView;
 
@@ -94,7 +87,6 @@ public class CameraActivity extends AppCompatActivity {
         takePictureOnClick();
         focusOnLongClick();
         switchCameraOnClick();
-        goToGalleryOnClick();
         toggleTorchOnSwitch();
         zoomSeekBar();
     }
@@ -131,22 +123,17 @@ public class CameraActivity extends AppCompatActivity {
     private void toggleTorchOnSwitch() {
         SwitchCompat torchSwitch = (SwitchCompat) findViewById(R.id.torchSwitch);
 
-        torchSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                fotoapparatSwitcher
-                        .getCurrentFotoapparat()
-                        .updateParameters(
-                                UpdateRequest.builder()
-                                        .flash(
-                                                isChecked
-                                                        ? torch()
-                                                        : off()
-                                        )
-                                        .build()
-                        );
-            }
-        });
+        torchSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> fotoapparatSwitcher
+                .getCurrentFotoapparat()
+                .updateParameters(
+                        UpdateRequest.builder()
+                                .flash(
+                                        isChecked
+                                                ? torch()
+                                                : off()
+                                )
+                                .build()
+                ));
     }
 
     private void switchCameraOnClick() {
@@ -159,43 +146,20 @@ public class CameraActivity extends AppCompatActivity {
         switchCameraOnClick(switchCameraButton);
     }
 
-    private void goToGalleryOnClick() {
-        View goToGalleryButton = findViewById(R.id.goToGallery);
-        goToGalleryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(CameraActivity.this, GalleryActivity.class));
-            }
-        });
-    }
-
     private void switchCameraOnClick(View view) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchCamera();
-            }
-        });
+        view.setOnClickListener(v -> switchCamera());
     }
 
     private void focusOnLongClick() {
-        cameraView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                fotoapparatSwitcher.getCurrentFotoapparat().autoFocus();
+        cameraView.setOnLongClickListener(v -> {
+            fotoapparatSwitcher.getCurrentFotoapparat().autoFocus();
 
-                return true;
-            }
+            return true;
         });
     }
 
     private void takePictureOnClick() {
-        cameraView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                takePicture();
-            }
-        });
+        cameraView.setOnClickListener(v -> takePicture());
     }
 
     private boolean canSwitchCameras() {
@@ -225,12 +189,7 @@ public class CameraActivity extends AppCompatActivity {
                         logcat(),
                         fileLogger(this)
                 ))
-                .cameraErrorCallback(new CameraErrorCallback() {
-                    @Override
-                    public void onError(CameraException e) {
-                        Toast.makeText(CameraActivity.this, e.toString(), Toast.LENGTH_LONG).show();
-                    }
-                })
+                .cameraErrorCallback(e -> Toast.makeText(CameraActivity.this, e.toString(), Toast.LENGTH_LONG).show())
                 .build();
     }
 
@@ -242,22 +201,19 @@ public class CameraActivity extends AppCompatActivity {
 
         photoResult
                 .toBitmap(scaled(0.25f))
-                .whenAvailable(new PendingResult.Callback<BitmapPhoto>() {
-                    @Override
-                    public void onResult(BitmapPhoto result) {
-                        FaceRepository repo = FaceRepository.getFaceRepository(CameraActivity.this);
-                        Face face = repo.create();
-                        face.saveImage(result.bitmap, -result.rotationDegrees);
+                .whenAvailable(result -> {
+                    FaceRepository repo = FaceRepository.getFaceRepository(CameraActivity.this);
+                    Face face = repo.create();
+                    face.saveImage(result.bitmap, -result.rotationDegrees);
 
-                        ClassifyTask task = new ClassifyTask(CameraActivity.this, face,
-                                serverAddress);
-                        task.execute();
+                    ClassifyTask task = new ClassifyTask(CameraActivity.this, face,
+                            serverAddress);
+                    task.execute();
 
-                        ImageView imageView = (ImageView) findViewById(R.id.result);
+                    ImageView imageView = (ImageView) findViewById(R.id.result);
 
-                        imageView.setImageBitmap(result.bitmap);
-                        imageView.setRotation(-result.rotationDegrees);
-                    }
+                    imageView.setImageBitmap(result.bitmap);
+                    imageView.setRotation(-result.rotationDegrees);
                 });
     }
 

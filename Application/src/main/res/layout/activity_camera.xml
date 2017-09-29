@@ -39,14 +39,6 @@
         android:layout_margin="8dp"
         android:text="@string/switch_camera"/>
 
-    <Button
-        android:id="@+id/goToGallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
-        android:layout_margin="8dp"
-        android:text="@string/gallery"/>
-
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/torchSwitch"
         android:layout_width="wrap_content"
