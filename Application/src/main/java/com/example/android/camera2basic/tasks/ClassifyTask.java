@@ -6,11 +6,18 @@ import android.os.AsyncTask;
 
 import com.example.android.camera2basic.CameraActivity;
 import com.example.android.camera2basic.data.Face;
-import com.example.android.camera2basic.MultipartUtility;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLConnection;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by mike on 23.09.17.
@@ -24,6 +31,7 @@ public class ClassifyTask extends AsyncTask<Void, Integer, ClassifyResponse> {
     private final File image;
     private final String serverAddress;
     private ClassifyResponse classifyResponse;
+    private final OkHttpClient client = new OkHttpClient();
 
     public ClassifyTask(CameraActivity ma, Face face, String serverAddress) {
         this.ma = ma;
@@ -45,19 +53,32 @@ public class ClassifyTask extends AsyncTask<Void, Integer, ClassifyResponse> {
 
     // This gets executed on a background thread
     protected ClassifyResponse doInBackground(Void... arg) {
-        ClassifyResponse response;
-        try {
-            MultipartUtility multipart = new MultipartUtility(serverAddress + "/classify", "utf-8");
-            multipart.addFilePart("image", image);
-            //multipart.addFormField("label", "mike");
-            response = new Gson().fromJson(multipart.finish(), ClassifyResponse.class);
+        ClassifyResponse jsonResponse;
+
+        MediaType contentType = MediaType.parse(URLConnection.guessContentTypeFromName(image.getName()));
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                //.addFormDataPart("label", "some name")
+                .addFormDataPart("image", image.getName(),
+                        RequestBody.create(contentType, image))
+                .build();
+        Request request = new Request.Builder()
+                .url(serverAddress + "/classify")
+                .post(requestBody)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful())
+                    throw new IOException("Unexpected code " + response);
+
+                jsonResponse = new Gson().fromJson(response.body().string(), ClassifyResponse.class);
         } catch (IOException e) {
             e.printStackTrace();
             ClassifyResponse failed = new ClassifyResponse();
-            failed.errorMessage = "IO Exception";
+            failed.errorMessage = e.getMessage();
             return failed;
         }
-        return response;
+        return jsonResponse;
     }
 
     @Override

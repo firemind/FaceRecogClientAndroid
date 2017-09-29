@@ -210,7 +210,7 @@ public class CameraActivity extends AppCompatActivity {
                             serverAddress);
                     task.execute();
 
-                    ImageView imageView = (ImageView) findViewById(R.id.result);
+                    ImageView imageView = findViewById(R.id.result);
 
                     imageView.setImageBitmap(result.bitmap);
                     imageView.setRotation(-result.rotationDegrees);
