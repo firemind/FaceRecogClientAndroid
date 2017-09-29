@@ -25,10 +25,6 @@ public class Face {
         repository.save();
     }
 
-    public void saveImage(Bitmap bitmap, int rotationDegrees) {
-        repository.save(this, bitmap, rotationDegrees);
-    }
-
     public File getImageFile(){
         return new File(repository.getPhotoDir(), imageName);
     }
@@ -79,5 +75,9 @@ public class Face {
 
     public void setRepository(FaceRepository repository) {
         this.repository = repository;
+    }
+
+    public String getImageName() {
+        return imageName;
     }
 }

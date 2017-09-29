@@ -16,20 +16,16 @@
 
 package com.example.android.camera2basic;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import com.example.android.camera2basic.data.Face;
 import com.example.android.camera2basic.data.FaceRepository;
-import com.example.android.camera2basic.tasks.ClassifyTask;
 
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
@@ -59,6 +55,7 @@ import static io.fotoapparat.result.transformer.SizeTransformers.scaled;
 
 
 public class CameraActivity extends AppCompatActivity {
+    public static final int GET_FACE_PHOTO_REQUEST = 1;
 
     private final PermissionsDelegate permissionsDelegate = new PermissionsDelegate(this);
     private boolean hasCameraPermission;
@@ -73,7 +70,7 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        cameraView = (CameraView) findViewById(R.id.camera_view);
+        cameraView = findViewById(R.id.camera_view);
         hasCameraPermission = permissionsDelegate.hasCameraPermission();
 
         if (hasCameraPermission) {
@@ -137,7 +134,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void switchCameraOnClick() {
-        View switchCameraButton = findViewById(R.id.switchCamera);
+        View switchCameraButton = findViewById(R.id.switch_camera);
         switchCameraButton.setVisibility(
                 canSwitchCameras()
                         ? View.VISIBLE
@@ -195,26 +192,20 @@ public class CameraActivity extends AppCompatActivity {
 
     private void takePicture() {
         PhotoResult photoResult = fotoapparatSwitcher.getCurrentFotoapparat().takePicture();
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        final String serverAddress = sharedPref.getString(SettingsActivity.KEY_PREF_SERVER_ADDRESS, "");
-
         photoResult
                 .toBitmap(scaled(0.25f))
                 .whenAvailable(result -> {
                     FaceRepository repo = FaceRepository.getFaceRepository(CameraActivity.this);
-                    Face face = repo.create();
-                    face.saveImage(result.bitmap, -result.rotationDegrees);
-
-                    ClassifyTask task = new ClassifyTask(CameraActivity.this, face,
-                            serverAddress);
-                    task.execute();
-
-                    ImageView imageView = findViewById(R.id.result);
-
-                    imageView.setImageBitmap(result.bitmap);
-                    imageView.setRotation(-result.rotationDegrees);
+                    String name = repo.saveImage(result.bitmap, -result.rotationDegrees);
+                    returnPhotoName(name);
                 });
+    }
+
+    protected void returnPhotoName(String name) {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("fileName", name);
+        setResult(RESULT_OK, returnIntent);
+        finish();
     }
 
     private void switchCamera() {
@@ -259,9 +250,5 @@ public class CameraActivity extends AppCompatActivity {
             // Perform frame processing, if needed
         }
 
-    }
-
-    public void showToast(final String text) {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 }

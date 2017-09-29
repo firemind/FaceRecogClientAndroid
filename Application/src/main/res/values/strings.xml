@@ -26,4 +26,5 @@
     <string name="pref_default_server_address">http://192.168.1.127:5000</string>
     <string name="action_settings">Settings</string>
     <string name="activity_label_settings">Settings</string>
+    <string name="message_classifying_face">Classifying Face</string>
 </resources>

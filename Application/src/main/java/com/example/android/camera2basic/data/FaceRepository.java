@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
@@ -94,7 +93,7 @@ public class FaceRepository {
         return faces;
     }
 
-    public void save(Face face, Bitmap bitmap, int rotationDegrees){
+    public String saveImage(Bitmap bitmap, int rotationDegrees){
         Matrix m = new Matrix();
         m.postRotate(rotationDegrees);
         Bitmap corrected = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, false);
@@ -103,16 +102,16 @@ public class FaceRepository {
                 photoDir,
                 getContinousFilename()
         );
+        String name = null;
         try{
             photo.getParentFile().mkdirs();
             photo.createNewFile();
             saveAsJpeg(corrected, photo);
-            face.setImageName(photo.getName());
-            getAll().add(face);
-            save();
+            name = photo.getName();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return name;
     }
 
     public void delete(Face face){
@@ -159,7 +158,9 @@ public class FaceRepository {
     }
 
     public Face create() {
-        return new Face(this);
+        Face face = new Face(this);
+        getAll().add(face);
+        return face;
     }
 
     public File getPhotoDir() {
