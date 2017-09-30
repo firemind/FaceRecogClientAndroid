@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -108,6 +109,8 @@ public class GalleryActivity extends AppCompatActivity {
                 FaceRepository repo = FaceRepository.getFaceRepository(this);
                 Face face = repo.create();
                 face.setImageName(data.getStringExtra("fileName"));
+                face.save();
+                reloadImages();
                 classifyFace(face);
             }
         }
@@ -137,7 +140,10 @@ public class GalleryActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(() -> {
-                    showToast(e.getMessage());
+                    showError(e.getLocalizedMessage());
+                    if (dlg.isShowing()) {
+                        dlg.dismiss();
+                    }
                 });
             }
 
@@ -171,7 +177,7 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
 
-    public void showToast(final String text) {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    public void showError(final String text) {
+        Snackbar.make(recyclerView, text, Snackbar.LENGTH_LONG).show();
     }
 }
