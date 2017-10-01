@@ -1,6 +1,5 @@
 package com.example.android.camera2basic.data;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 
 import java.io.File;
@@ -9,7 +8,7 @@ import java.io.File;
  * Created by viruch on 27.09.17.
  */
 
-public class Face {
+public class FaceData {
     private String imageName;
     private double predictionScore;
     private String predictionLabel;
@@ -17,7 +16,7 @@ public class Face {
     private String taggedLabel;
     private transient FaceRepository repository;
 
-    Face(FaceRepository repository){
+    FaceData(FaceRepository repository){
         this.repository = repository;
     }
 

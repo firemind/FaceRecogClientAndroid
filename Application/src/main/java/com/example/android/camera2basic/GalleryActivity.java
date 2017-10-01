@@ -14,11 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.android.camera2basic.adapters.FaceAdapter;
 import com.example.android.camera2basic.data.ClassifyResponse;
-import com.example.android.camera2basic.data.Face;
+import com.example.android.camera2basic.data.FaceData;
 import com.example.android.camera2basic.data.FaceRepository;
 import com.google.gson.Gson;
 
@@ -57,9 +56,7 @@ public class GalleryActivity extends AppCompatActivity {
         setupRecyclerView();
 
         FloatingActionButton button = findViewById(R.id.action_go_to_camera_button);
-        button.setOnClickListener(view -> {
-            requestFacePhoto();
-        });
+        button.setOnClickListener(view -> requestFacePhoto());
     }
 
     private void requestFacePhoto() {
@@ -107,7 +104,7 @@ public class GalleryActivity extends AppCompatActivity {
         if (requestCode == CameraActivity.GET_FACE_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
                 FaceRepository repo = FaceRepository.getFaceRepository(this);
-                Face face = repo.create();
+                FaceData face = repo.create();
                 face.setImageName(data.getStringExtra("fileName"));
                 face.save();
                 reloadImages();
@@ -116,7 +113,7 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-    private void classifyFace(Face face) {
+    private void classifyFace(FaceData faceData) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         final String serverAddress = sharedPref.getString(SettingsActivity.KEY_PREF_SERVER_ADDRESS, "");
 
@@ -124,12 +121,12 @@ public class GalleryActivity extends AppCompatActivity {
         dlg.setMessage(getString(R.string.message_classifying_face));
         dlg.show();
 
-        MediaType contentType = MediaType.parse(URLConnection.guessContentTypeFromName(face.getImageName()));
+        MediaType contentType = MediaType.parse(URLConnection.guessContentTypeFromName(faceData.getImageName()));
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 //.addFormDataPart("label", "some name")
-                .addFormDataPart("image", face.getImageName(),
-                        RequestBody.create(contentType, face.getImageFile()))
+                .addFormDataPart("image", faceData.getImageName(),
+                        RequestBody.create(contentType, faceData.getImageFile()))
                 .build();
         Request request = new Request.Builder()
                 .url(serverAddress + "/classify")
@@ -157,10 +154,10 @@ public class GalleryActivity extends AppCompatActivity {
                         ClassifyResponse.class);
 
                 runOnUiThread(() -> {
-                    face.setPredictionLabel(result.label);
-                    face.setPredictionScore(result.score);
-                    face.setPredictionImagePath(result.image);
-                    face.save();
+                    faceData.setPredictionLabel(result.label);
+                    faceData.setPredictionScore(result.score);
+                    faceData.setPredictionImagePath(result.image);
+                    faceData.save();
                     reloadImages();
                     if (dlg.isShowing()) {
                         dlg.dismiss();
@@ -170,8 +167,8 @@ public class GalleryActivity extends AppCompatActivity {
         });
     }
 
-    private List<Face> prepareData() {
-        List<Face> faces = FaceRepository.getFaceRepository(this).getAll();
+    private List<FaceData> prepareData() {
+        List<FaceData> faces = FaceRepository.getFaceRepository(this).getAll();
         Collections.reverse(faces);
         return faces;
     }

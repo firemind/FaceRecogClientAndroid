@@ -95,7 +95,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void zoomSeekBar() {
-        SeekBar seekBar = (SeekBar) findViewById(R.id.zoomSeekBar);
+        SeekBar seekBar = findViewById(R.id.zoomSeekBar);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -118,7 +118,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void toggleTorchOnSwitch() {
-        SwitchCompat torchSwitch = (SwitchCompat) findViewById(R.id.torchSwitch);
+        SwitchCompat torchSwitch = findViewById(R.id.torchSwitch);
 
         torchSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> fotoapparatSwitcher
                 .getCurrentFotoapparat()
@@ -244,10 +244,9 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private class SampleFrameProcessor implements FrameProcessor {
-
         @Override
         public void processFrame(Frame frame) {
-            // Perform frame processing, if needed
+
         }
 
     }

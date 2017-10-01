@@ -29,7 +29,7 @@ public class FaceRepository {
     private File repo;
     private File photoDir;
     private Gson gson;
-    private List<Face> faces = null;
+    private List<FaceData> faces = null;
     private String serverAddress;
 
     private FaceRepository(File home, String serverAddress) {
@@ -56,8 +56,8 @@ public class FaceRepository {
             try {
                 faces = new ArrayList<>(
                         Arrays.asList(
-                                gson.fromJson(new FileReader(repo), Face[].class)));
-                for (Face f : faces){
+                                gson.fromJson(new FileReader(repo), FaceData[].class)));
+                for (FaceData f : faces){
                     f.setRepository(this);
                 }
             } catch(FileNotFoundException e){
@@ -86,7 +86,7 @@ public class FaceRepository {
         }
     }
 
-    public List<Face> getAll(){
+    public List<FaceData> getAll(){
         if (faces == null){
             readFromFile();
         }
@@ -114,7 +114,7 @@ public class FaceRepository {
         return name;
     }
 
-    public void delete(Face face){
+    public void delete(FaceData face){
         File photo = face.getImageFile();
         if (photo.exists()) {
             photo.delete();
@@ -157,8 +157,8 @@ public class FaceRepository {
         }
     }
 
-    public Face create() {
-        Face face = new Face(this);
+    public FaceData create() {
+        FaceData face = new FaceData(this);
         getAll().add(face);
         return face;
     }

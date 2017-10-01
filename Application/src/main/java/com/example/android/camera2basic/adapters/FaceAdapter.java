@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.camera2basic.data.Face;
 import com.example.android.camera2basic.R;
+import com.example.android.camera2basic.data.FaceData;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,13 +21,13 @@ import java.util.List;
  */
 
 public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
-    private List<Face> galleryList;
+    private List<FaceData> galleryList;
     private Context context;
     private String notPredictedMessage;
     private int image_width;
     private int image_height;
 
-    public FaceAdapter(Context context, List<Face> galleryList) {
+    public FaceAdapter(Context context, List<FaceData> galleryList) {
         this.galleryList = galleryList;
         this.context = context;
         Resources res = context.getResources();
@@ -44,7 +44,7 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(FaceAdapter.ViewHolder holder, int i) {
-        Face face = galleryList.get(i);
+        FaceData face = galleryList.get(i);
 
         String predictionLabel = face.getPredictionLabel();
         renderToImageView(Uri.fromFile(face.getImageFile()), holder.testImageView);
@@ -86,11 +86,11 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         ViewHolder(View view) {
             super(view);
 
-            testImageView = (ImageView) view.findViewById(R.id.test_image);
-            testLabel = (TextView) view.findViewById(R.id.test_label);
-            predictionLabel = (TextView)view.findViewById(R.id.prediction_label);
-            predictionScore = (TextView)view.findViewById(R.id.prediction_score);
-            predictionImageView = (ImageView)view.findViewById(R.id.prediction_image);
+            testImageView = view.findViewById(R.id.test_image);
+            testLabel = view.findViewById(R.id.test_label);
+            predictionLabel = view.findViewById(R.id.prediction_label);
+            predictionScore = view.findViewById(R.id.prediction_score);
+            predictionImageView = view.findViewById(R.id.prediction_image);
 
         }
     }
