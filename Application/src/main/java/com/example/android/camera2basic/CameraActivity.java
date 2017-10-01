@@ -53,6 +53,7 @@ import static io.fotoapparat.result.transformer.SizeTransformers.scaled;
 
 public class CameraActivity extends AppCompatActivity {
     public static final int GET_FACE_PHOTO_REQUEST = 1;
+    private static final String STATE_CAMERA_FRONT = "STATE_CAMERA_FRONT";
 
     private final PermissionsDelegate permissionsDelegate = new PermissionsDelegate(this);
     private boolean hasCameraPermission;
@@ -168,8 +169,12 @@ public class CameraActivity extends AppCompatActivity {
         finish();
     }
 
+    private boolean isShowingFrontCamera() {
+        return fotoapparatSwitcher.getCurrentFotoapparat() == frontFotoapparat;
+    }
+
     private void switchCamera() {
-        if (fotoapparatSwitcher.getCurrentFotoapparat() == frontFotoapparat) {
+        if (isShowingFrontCamera()) {
             fotoapparatSwitcher.switchTo(backFotoapparat);
         } else {
             fotoapparatSwitcher.switchTo(frontFotoapparat);
@@ -190,6 +195,27 @@ public class CameraActivity extends AppCompatActivity {
         if (hasCameraPermission) {
             fotoapparatSwitcher.stop();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(STATE_CAMERA_FRONT, isShowingFrontCamera());
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        boolean isFront = savedInstanceState.getBoolean(STATE_CAMERA_FRONT);
+        boolean showingFrontCamera = isShowingFrontCamera();
+
+        if (isFront && !showingFrontCamera){
+            fotoapparatSwitcher.switchTo(frontFotoapparat);
+        } else if (!isFront && showingFrontCamera){
+            fotoapparatSwitcher.switchTo(backFotoapparat);
+        }
+
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
