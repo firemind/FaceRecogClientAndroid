@@ -20,20 +20,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
 import android.view.View;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.example.android.camera2basic.data.FaceRepository;
 
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
+import io.fotoapparat.facedetector.processor.FaceDetectorProcessor;
+import io.fotoapparat.facedetector.view.RectanglesView;
 import io.fotoapparat.parameter.LensPosition;
 import io.fotoapparat.parameter.ScaleType;
-import io.fotoapparat.parameter.update.UpdateRequest;
-import io.fotoapparat.preview.Frame;
-import io.fotoapparat.preview.FrameProcessor;
 import io.fotoapparat.result.PhotoResult;
 import io.fotoapparat.view.CameraView;
 
@@ -64,6 +61,7 @@ public class CameraActivity extends AppCompatActivity {
     private FotoapparatSwitcher fotoapparatSwitcher;
     private Fotoapparat frontFotoapparat;
     private Fotoapparat backFotoapparat;
+    private RectanglesView rectanglesView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +69,7 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
 
         cameraView = findViewById(R.id.camera_view);
+        rectanglesView = findViewById(R.id.rectanglesView);
         hasCameraPermission = permissionsDelegate.hasCameraPermission();
 
         if (hasCameraPermission) {
@@ -84,53 +83,12 @@ public class CameraActivity extends AppCompatActivity {
         takePictureOnClick();
         focusOnLongClick();
         switchCameraOnClick();
-        toggleTorchOnSwitch();
-        zoomSeekBar();
     }
 
     private void setupFotoapparat() {
         frontFotoapparat = createFotoapparat(LensPosition.FRONT);
         backFotoapparat = createFotoapparat(LensPosition.BACK);
         fotoapparatSwitcher = FotoapparatSwitcher.withDefault(frontFotoapparat);
-    }
-
-    private void zoomSeekBar() {
-        SeekBar seekBar = findViewById(R.id.zoomSeekBar);
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                fotoapparatSwitcher
-                        .getCurrentFotoapparat()
-                        .setZoom(progress / (float) seekBar.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // Do nothing
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // Do nothing
-            }
-        });
-    }
-
-    private void toggleTorchOnSwitch() {
-        SwitchCompat torchSwitch = findViewById(R.id.torchSwitch);
-
-        torchSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> fotoapparatSwitcher
-                .getCurrentFotoapparat()
-                .updateParameters(
-                        UpdateRequest.builder()
-                                .flash(
-                                        isChecked
-                                                ? torch()
-                                                : off()
-                                )
-                                .build()
-                ));
     }
 
     private void switchCameraOnClick() {
@@ -181,7 +139,9 @@ public class CameraActivity extends AppCompatActivity {
                         torch(),
                         off()
                 ))
-                .frameProcessor(new SampleFrameProcessor())
+                .frameProcessor(FaceDetectorProcessor.with(this)
+                        .listener(faces -> rectanglesView.setRectangles(faces))
+                        .build())
                 .logger(loggers(
                         logcat(),
                         fileLogger(this)
@@ -241,13 +201,5 @@ public class CameraActivity extends AppCompatActivity {
             fotoapparatSwitcher.start();
             cameraView.setVisibility(View.VISIBLE);
         }
-    }
-
-    private class SampleFrameProcessor implements FrameProcessor {
-        @Override
-        public void processFrame(Frame frame) {
-
-        }
-
     }
 }
