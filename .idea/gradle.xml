@@ -5,10 +5,10 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="/usr/bin/gradle" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
+            <option value="$USER_HOME$" />
+            <option value="$USER_HOME$/Application" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
