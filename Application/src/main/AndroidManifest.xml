@@ -14,7 +14,7 @@
  limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.android.camera2basic">
+    package="ch.hsr.apps.facerecognition">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -28,19 +28,19 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CameraActivity"
+            android:name="ch.hsr.apps.facerecognition.CameraActivity"
             android:label="@string/app_name">
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="ch.hsr.apps.facerecognition.SettingsActivity"
             android:label="@string/activity_label_settings">
         </activity>
         <activity
-            android:name=".GalleryActivity"
+            android:name="ch.hsr.apps.facerecognition.GalleryActivity"
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
     </application>

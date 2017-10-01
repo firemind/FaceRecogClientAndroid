@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.camera2basic;
+package ch.hsr.apps.facerecognition;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,8 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.android.camera2basic.data.FaceRepository;
-
+import ch.hsr.apps.facerecognition.data.FaceRepository;
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
 import io.fotoapparat.facedetector.processor.FaceDetectorProcessor;

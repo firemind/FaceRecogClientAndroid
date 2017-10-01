@@ -1,4 +1,4 @@
-package com.example.android.camera2basic;
+package ch.hsr.apps.facerecognition;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,10 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.android.camera2basic.adapters.FaceAdapter;
-import com.example.android.camera2basic.data.ClassifyResponse;
-import com.example.android.camera2basic.data.FaceData;
-import com.example.android.camera2basic.data.FaceRepository;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -26,6 +22,10 @@ import java.net.URLConnection;
 import java.util.Collections;
 import java.util.List;
 
+import ch.hsr.apps.facerecognition.adapters.FaceAdapter;
+import ch.hsr.apps.facerecognition.data.ClassifyResponse;
+import ch.hsr.apps.facerecognition.data.FaceData;
+import ch.hsr.apps.facerecognition.data.FaceRepository;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;

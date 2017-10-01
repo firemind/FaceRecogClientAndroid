@@ -1,4 +1,4 @@
-package com.example.android.camera2basic;
+package ch.hsr.apps.facerecognition;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

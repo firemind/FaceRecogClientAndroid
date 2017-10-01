@@ -1,4 +1,4 @@
-package com.example.android.camera2basic.data;
+package ch.hsr.apps.facerecognition.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
-import com.example.android.camera2basic.SettingsActivity;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import ch.hsr.apps.facerecognition.SettingsActivity;
 
 /**
  * Created by viruch on 27.09.17.

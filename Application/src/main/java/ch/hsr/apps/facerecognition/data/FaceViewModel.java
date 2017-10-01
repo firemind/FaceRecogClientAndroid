@@ -1,4 +1,4 @@
-package com.example.android.camera2basic.data;
+package ch.hsr.apps.facerecognition.data;
 
 import android.arch.lifecycle.ViewModel;
 

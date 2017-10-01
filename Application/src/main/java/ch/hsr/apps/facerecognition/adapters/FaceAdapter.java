@@ -1,4 +1,4 @@
-package com.example.android.camera2basic.adapters;
+package ch.hsr.apps.facerecognition.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -10,11 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.camera2basic.R;
-import com.example.android.camera2basic.data.FaceData;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import ch.hsr.apps.facerecognition.R;
+import ch.hsr.apps.facerecognition.data.FaceData;
 
 /**
  * Created by viruch on 27.09.17.
