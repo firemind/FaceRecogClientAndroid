@@ -3,27 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:activity="com.example.android.CameraActivity">
 
-    <io.fotoapparat.facedetector.view.CameraOverlayLayout
+    <io.fotoapparat.view.CameraView
+        android:id="@+id/camera_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <!-- Adjust parameters as you like. But cameraView has to be inside CameraOverlayLayout -->
-        <io.fotoapparat.view.CameraView
-            android:id="@+id/camera_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- This view will display detected faces -->
-        <io.fotoapparat.facedetector.view.RectanglesView
-            android:id="@+id/rectanglesView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:rectanglesColor="@color/colorAccent"
-            app:rectanglesStrokeWidth="2dp"/>
-    </io.fotoapparat.facedetector.view.CameraOverlayLayout>
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/no_permission"

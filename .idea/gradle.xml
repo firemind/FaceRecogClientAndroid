@@ -7,8 +7,9 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$USER_HOME$" />
-            <option value="$USER_HOME$/Application" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Application" />
+            <option value="$PROJECT_DIR$/openCVLibrary330" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

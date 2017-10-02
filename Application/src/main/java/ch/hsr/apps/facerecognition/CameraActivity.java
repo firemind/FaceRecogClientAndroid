@@ -26,8 +26,6 @@ import android.widget.Toast;
 import ch.hsr.apps.facerecognition.data.FaceRepository;
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
-import io.fotoapparat.facedetector.processor.FaceDetectorProcessor;
-import io.fotoapparat.facedetector.view.RectanglesView;
 import io.fotoapparat.parameter.LensPosition;
 import io.fotoapparat.parameter.ScaleType;
 import io.fotoapparat.result.PhotoResult;
@@ -61,7 +59,6 @@ public class CameraActivity extends AppCompatActivity {
     private FotoapparatSwitcher fotoapparatSwitcher;
     private Fotoapparat frontFotoapparat;
     private Fotoapparat backFotoapparat;
-    private RectanglesView rectanglesView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +66,6 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
 
         cameraView = findViewById(R.id.camera_view);
-        rectanglesView = findViewById(R.id.rectanglesView);
         hasCameraPermission = permissionsDelegate.hasCameraPermission();
 
         if (hasCameraPermission) {
@@ -139,9 +135,6 @@ public class CameraActivity extends AppCompatActivity {
                         torch(),
                         off()
                 ))
-                .frameProcessor(FaceDetectorProcessor.with(this)
-                        .listener(faces -> rectanglesView.setRectangles(faces))
-                        .build())
                 .logger(loggers(
                         logcat(),
                         fileLogger(this)
