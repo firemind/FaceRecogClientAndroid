@@ -3,6 +3,7 @@ package ch.hsr.apps.facerecognition;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -39,6 +40,7 @@ public class GalleryActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private final OkHttpClient client = new OkHttpClient();
     private ProgressDialog dlg;
+    private Drawable personPlaceholderImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,8 @@ public class GalleryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
+
+        personPlaceholderImage = getDrawable(R.drawable.person_placeholder);
 
         setupRecyclerView();
 
@@ -70,13 +74,13 @@ public class GalleryActivity extends AppCompatActivity {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData());
+        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage);
         recyclerView.setAdapter(adapter);
     }
 
     public void reloadImages() {
         super.onResume();
-        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData());
+        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage);
         recyclerView.setAdapter(adapter);
         recyclerView.invalidate();
     }

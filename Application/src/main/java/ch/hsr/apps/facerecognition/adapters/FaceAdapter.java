@@ -2,6 +2,7 @@ package ch.hsr.apps.facerecognition.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,10 +28,12 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
     private String notPredictedMessage;
     private int image_width;
     private int image_height;
+    private Drawable personPlaceholderImage;
 
-    public FaceAdapter(Context context, List<FaceData> galleryList) {
+    public FaceAdapter(Context context, List<FaceData> galleryList, Drawable personPlaceholderImage) {
         this.galleryList = galleryList;
         this.context = context;
+        this.personPlaceholderImage = personPlaceholderImage;
         Resources res = context.getResources();
         notPredictedMessage = res.getString(R.string.not_predicted);
         image_width = (int) res.getDimension(R.dimen.image_preview_width);
@@ -61,6 +64,8 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         Uri predictionImageUri = face.getPredictionImageUri();
         if (predictionImageUri != null){
             renderToImageView(predictionImageUri, holder.predictionImageView);
+        } else {
+            holder.predictionImageView.setImageDrawable(personPlaceholderImage);
         }
     }
 
@@ -69,6 +74,7 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
                 .load(uri)
                 .resize(image_width, image_height)
                 .centerCrop()
+                .placeholder(personPlaceholderImage)
                 .into(testImageView);
     }
 
