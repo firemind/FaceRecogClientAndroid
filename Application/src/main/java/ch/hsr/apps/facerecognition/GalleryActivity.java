@@ -128,7 +128,7 @@ public class GalleryActivity extends AppCompatActivity {
         MediaType contentType = MediaType.parse(URLConnection.guessContentTypeFromName(faceData.getImageName()));
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                //.addFormDataPart("label", "some name")
+                .addFormDataPart("align", "true")
                 .addFormDataPart("image", faceData.getImageName(),
                         RequestBody.create(contentType, faceData.getImageFile()))
                 .build();
