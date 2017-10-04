@@ -15,8 +15,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,6 +35,7 @@ public class FaceRepository {
     private Gson gson;
     private List<FaceData> faces = null;
     private String serverAddress;
+    private DateFormat filenameFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.ENGLISH);
 
     private FaceRepository(File home, String serverAddress) {
         this.repo = new File(home, "faces.json");
@@ -129,17 +133,7 @@ public class FaceRepository {
     }
 
     private String getContinousFilename() {
-        String[] filenames = photoDir.list();
-        int maxFileNumber = 0;
-        if (filenames != null){
-            for (String filename: filenames){
-                String nameOnlyNumber = filename.replaceAll("[^\\d]", "");
-                if (nameOnlyNumber.length() == 0)
-                    continue;
-                maxFileNumber = Math.max(Integer.parseInt(nameOnlyNumber), maxFileNumber);
-            }
-        }
-        return String.format(Locale.ENGLISH, "%04d.jpg", maxFileNumber + 1);
+        return filenameFormat.format(new Date()) + ".jpg";
     }
 
     private void saveAsJpeg(Bitmap bmp, File photo) throws FileNotFoundException {
