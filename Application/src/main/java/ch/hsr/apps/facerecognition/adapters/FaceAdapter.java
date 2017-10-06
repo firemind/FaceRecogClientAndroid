@@ -95,7 +95,7 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
             holder.predictionScore.setVisibility(View.INVISIBLE);
         } else {
             holder.predictionLabel.setText(predictionLabel);
-            holder.predictionScore.setText("" + (int)(face.getPredictionScore() * 100f) + "%");
+            holder.predictionScore.setText("" + (int) (face.getPredictionScore() * 100.) + "%");
         }
 
         Uri predictionImageUri = face.getPredictionImageUri();
@@ -104,10 +104,11 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         } else {
             holder.predictionImageView.setImageDrawable(personPlaceholderImage);
         }
+        final String id = face.getId();
         holder.actionRepredict
-                .setOnClickListener((view) -> action.onFaceRepredict(galleryList.get(i)));
+                .setOnClickListener((view) -> action.onFaceRepredict(id));
         holder.actionDelete
-                .setOnClickListener((view) -> action.onFaceDelete(galleryList.get(i)));
+                .setOnClickListener((view) -> action.onFaceDelete(id));
 
     }
 

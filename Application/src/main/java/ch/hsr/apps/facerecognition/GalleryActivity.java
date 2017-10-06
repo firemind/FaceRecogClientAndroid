@@ -74,8 +74,8 @@ public class GalleryActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         FaceAdapter adapter = new FaceAdapter(this, repo, new FaceAction() {
             @Override
-            public void onFaceRepredict(FaceData faceData) {
-                classifyFace(faceData);
+            public void onFaceRepredict(String id) {
+                classifyFace(repo.find(id));
             }
 
             @Override
@@ -84,8 +84,8 @@ public class GalleryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFaceDelete(FaceData faceData) {
-                repo.delete(faceData);
+            public void onFaceDelete(String id) {
+                repo.delete(id);
             }
         });
         recyclerView.setAdapter(adapter);

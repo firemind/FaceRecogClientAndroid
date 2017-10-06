@@ -97,7 +97,7 @@ public class FaceRepository {
         FileWriter writer = null;
         try {
             repoDir.mkdir();
-            File f = getStoragePath(face);
+            File f = getStoragePath(face.getId());
             writer = new FileWriter(f, false);
             gson.toJson(face, writer);
             writer.close();
@@ -115,8 +115,8 @@ public class FaceRepository {
     }
 
     @NonNull
-    private File getStoragePath(FaceData face) {
-        return new File(repoDir, face.getId() + ".json");
+    private File getStoragePath(String id) {
+        return new File(repoDir, id + ".json");
     }
 
     public List<FaceData> getAll(){
@@ -126,7 +126,7 @@ public class FaceRepository {
     }
 
     public FaceData find(String id) {
-        File f = new File(repoDir, id + ".json");
+        File f = getStoragePath(id);
         FaceData face;
         try {
             face = readFace(f);
@@ -160,12 +160,12 @@ public class FaceRepository {
         return face;
     }
 
-    public void delete(FaceData face){
-        File faceFile = getStoragePath(face);
+    public void delete(String id) {
+        File faceFile = getStoragePath(id);
         if (faceFile.exists()) {
             faceFile.delete();
         }
-        File photo = face.getImageFile();
+        File photo = new File(photoDir, id + ".jpg");
         if (photo.exists()) {
             photo.delete();
         }
