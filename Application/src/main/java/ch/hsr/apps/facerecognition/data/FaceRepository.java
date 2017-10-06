@@ -63,7 +63,7 @@ public class FaceRepository {
                         Arrays.asList(
                                 gson.fromJson(new FileReader(repo), FaceData[].class)));
                 for (FaceData f : faces){
-                    f.setRepository(this);
+                    f.initialize(this);
                 }
             } catch(FileNotFoundException e){
                 e.printStackTrace();
@@ -153,7 +153,8 @@ public class FaceRepository {
     }
 
     public FaceData create() {
-        FaceData face = new FaceData(this);
+        FaceData face = new FaceData();
+        face.initialize(this);
         getAll().add(face);
         return face;
     }

@@ -15,21 +15,23 @@ public class FaceData {
     private String predictionImagePath;
     private String taggedLabel;
     private transient FaceRepository repository;
-
-    FaceData(FaceRepository repository){
-        this.repository = repository;
-    }
+    private transient File photoDir;
+    private transient String serverAddress;
 
     public void save() {
         repository.save();
     }
 
-    public File getImageFile(){
-        return new File(repository.getPhotoDir(), imageName);
+    public String getImageName() {
+        return imageName;
     }
 
     public void setImageName(String imageName) {
         this.imageName = imageName;
+    }
+
+    public File getImageFile(){
+        return new File(photoDir, imageName);
     }
 
     public double getPredictionScore() {
@@ -51,7 +53,7 @@ public class FaceData {
     public Uri getPredictionImageUri() {
         if (predictionImagePath == null)
             return null;
-        return Uri.parse(repository.getServerAddress()).buildUpon()
+        return Uri.parse(serverAddress).buildUpon()
                 .encodedPath(predictionImagePath)
                 .build();
     }
@@ -68,15 +70,9 @@ public class FaceData {
         this.taggedLabel = taggedLabel;
     }
 
-    public FaceRepository getRepository() {
-        return repository;
-    }
-
-    public void setRepository(FaceRepository repository) {
+    void initialize(FaceRepository repository) {
         this.repository = repository;
-    }
-
-    public String getImageName() {
-        return imageName;
+        photoDir = repository.getPhotoDir();
+        serverAddress = repository.getServerAddress();
     }
 }
