@@ -55,7 +55,7 @@ public class FaceData {
     }
 
     public Uri getPredictionImageUri() {
-        if (predictionImagePath == null)
+        if (predictionImagePath == null || predictionImagePath.length() == 0)
             return null;
         return Uri.parse(serverAddress).buildUpon()
                 .encodedPath(predictionImagePath)

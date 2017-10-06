@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import ch.hsr.apps.facerecognition.data.FaceData;
  */
 
 public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
+    private final FaceAction action;
     private List<FaceData> galleryList;
     private Context context;
     private String notPredictedMessage;
@@ -30,9 +32,10 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
     private int image_height;
     private Drawable personPlaceholderImage;
 
-    public FaceAdapter(Context context, List<FaceData> galleryList, Drawable personPlaceholderImage) {
+    public FaceAdapter(Context context, List<FaceData> galleryList, Drawable personPlaceholderImage, FaceAction action) {
         this.galleryList = galleryList;
         this.context = context;
+        this.action = action;
         this.personPlaceholderImage = personPlaceholderImage;
         Resources res = context.getResources();
         notPredictedMessage = res.getString(R.string.not_predicted);
@@ -67,6 +70,9 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         } else {
             holder.predictionImageView.setImageDrawable(personPlaceholderImage);
         }
+        holder.actionRepredict.setOnClickListener((view) -> {
+            action.onFaceRepredict(galleryList.get(i));
+        });
     }
 
     private void renderToImageView(Uri uri, ImageView testImageView) {
@@ -89,6 +95,7 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         private TextView predictionScore;
         private TextView predictionLabel;
         private ImageView predictionImageView;
+        private ImageButton actionRepredict;
 
         ViewHolder(View view) {
             super(view);
@@ -98,6 +105,7 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
             predictionLabel = view.findViewById(R.id.prediction_label);
             predictionScore = view.findViewById(R.id.prediction_score);
             predictionImageView = view.findViewById(R.id.prediction_image);
+            actionRepredict = view.findViewById(R.id.action_repredict_image);
 
         }
     }

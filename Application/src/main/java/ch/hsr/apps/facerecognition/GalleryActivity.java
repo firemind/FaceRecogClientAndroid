@@ -74,13 +74,13 @@ public class GalleryActivity extends AppCompatActivity {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage);
+        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage, this::classifyFace);
         recyclerView.setAdapter(adapter);
     }
 
     public void reloadImages() {
         super.onResume();
-        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage);
+        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage, this::classifyFace);
         recyclerView.setAdapter(adapter);
         recyclerView.invalidate();
     }
