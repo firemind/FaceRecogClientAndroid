@@ -1,8 +1,6 @@
 package ch.hsr.apps.facerecognition;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -15,30 +13,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
-import java.net.URLConnection;
 
 import ch.hsr.apps.facerecognition.adapters.FaceAction;
 import ch.hsr.apps.facerecognition.adapters.FaceAdapter;
-import ch.hsr.apps.facerecognition.data.ClassifyResponse;
 import ch.hsr.apps.facerecognition.data.FaceData;
 import ch.hsr.apps.facerecognition.data.FaceRepository;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import ch.hsr.apps.facerecognition.data.FaceService;
 
 public class GalleryActivity extends AppCompatActivity {
-    private final OkHttpClient client = new OkHttpClient();
     private RecyclerView recyclerView;
-    private ProgressDialog dlg;
     private FaceRepository repo;
+    private FaceService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +40,7 @@ public class GalleryActivity extends AppCompatActivity {
         final AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
 
         repo = FaceRepository.getFaceRepository(this);
+        service = new FaceService();
 
         setupRecyclerView();
 
@@ -75,7 +62,8 @@ public class GalleryActivity extends AppCompatActivity {
         FaceAdapter adapter = new FaceAdapter(this, repo, new FaceAction() {
             @Override
             public void onFaceRepredict(String id) {
-                classifyFace(repo.find(id));
+                service.classifyFace(repo.find(id), GalleryActivity.this,
+                        GalleryActivity.this::showError);
             }
 
             @Override
@@ -114,65 +102,13 @@ public class GalleryActivity extends AppCompatActivity {
         if (requestCode == CameraActivity.GET_FACE_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
                 FaceData face = repo.find(data.getStringExtra("faceId"));
-                classifyFace(face);
+                service.classifyFace(face, this, this::showError);
             }
         }
     }
 
-    private void classifyFace(FaceData faceData) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        final String serverAddress = sharedPref.getString(SettingsActivity.KEY_PREF_SERVER_ADDRESS, "");
-
-        dlg = new ProgressDialog(this);
-        dlg.setMessage(getString(R.string.message_classifying_face));
-        dlg.show();
-
-        MediaType contentType = MediaType.parse(URLConnection.guessContentTypeFromName(faceData.getImageName()));
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("align", "true")
-                .addFormDataPart("image", faceData.getImageName(),
-                        RequestBody.create(contentType, faceData.getImageFile()))
-                .build();
-        Request request = new Request.Builder()
-                .url(serverAddress + "/classify")
-                .post(requestBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> {
-                    showError(e.getLocalizedMessage());
-                    if (dlg.isShowing()) {
-                        dlg.dismiss();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
-                }
-
-                ClassifyResponse result = new Gson().fromJson(response.body().string(),
-                        ClassifyResponse.class);
-
-                runOnUiThread(() -> {
-                    faceData.setPredictionLabel(result.label);
-                    faceData.setPredictionScore(result.score);
-                    faceData.setPredictionImagePath(result.image);
-                    faceData.save();
-                    if (dlg.isShowing()) {
-                        dlg.dismiss();
-                    }
-                });
-            }
-        });
+    protected void showError(IOException e) {
+        Snackbar.make(recyclerView, e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
     }
 
-    public void showError(final String text) {
-        Snackbar.make(recyclerView, text, Snackbar.LENGTH_LONG).show();
-    }
 }

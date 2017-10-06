@@ -7,6 +7,5 @@ package ch.hsr.apps.facerecognition.adapters;
 public interface FaceAction {
     void onFaceRepredict(String id);
     void onFaceInserted(int position);
-
     void onFaceDelete(String id);
 }
