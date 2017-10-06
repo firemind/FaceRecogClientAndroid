@@ -9,7 +9,7 @@ import java.io.File;
  */
 
 public class FaceData {
-    private String imageName;
+    private String id;
     private double predictionScore;
     private String predictionLabel;
     private String predictionImagePath;
@@ -18,20 +18,28 @@ public class FaceData {
     private transient File photoDir;
     private transient String serverAddress;
 
+    FaceData(String id) {
+        this.id = id;
+    }
+
     public void save() {
-        repository.save();
+        repository.save(this);
     }
 
     public String getImageName() {
-        return imageName;
+        return id + ".jpg";
     }
 
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public File getImageFile(){
-        return new File(photoDir, imageName);
+        return new File(photoDir, getImageName());
     }
 
     public double getPredictionScore() {

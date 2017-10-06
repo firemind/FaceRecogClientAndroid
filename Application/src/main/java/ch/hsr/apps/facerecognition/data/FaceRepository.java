@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -52,15 +51,13 @@ public class FaceRepository {
         return new FaceRepository(home, serverAddress);
     }
 
-    private void readFromFile() {
+    private void readAllFaces() {
         faces = new ArrayList<>();
 
         if (repoDir.exists()) {
             try {
                 for(File f : repoDir.listFiles()){
-                    FaceData face = gson.fromJson(new FileReader(f), FaceData.class);
-                    face.initialize(this);
-                    faces.add(face);
+                    faces.add(readFace(f));
                 }
             } catch(FileNotFoundException e){
                 e.printStackTrace();
@@ -68,16 +65,21 @@ public class FaceRepository {
         }
     }
 
-    private void writeToFile(){
+    @NonNull
+    private FaceData readFace(File f) throws FileNotFoundException {
+        FaceData face = gson.fromJson(new FileReader(f), FaceData.class);
+        face.initialize(this);
+        return face;
+    }
+
+    private void writeToFile(FaceData face) {
         FileWriter writer = null;
         try {
             repoDir.mkdir();
-            for (FaceData face : faces) {
-                File f = new File(repoDir, face.getImageName().replace("jpg", "json"));
-                writer = new FileWriter(f, false);
-                gson.toJson(face, writer);
-                writer.close();
-            }
+            File f = new File(repoDir, face.getId() + ".json");
+            writer = new FileWriter(f, false);
+            gson.toJson(face, writer);
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -93,30 +95,48 @@ public class FaceRepository {
 
     public List<FaceData> getAll(){
         if (faces == null){
-            readFromFile();
+            readAllFaces();
         }
         return faces;
     }
 
-    public String saveImage(Bitmap bitmap, int rotationDegrees){
+    public FaceData find(String id) {
+        FaceData face = null;
+        if (repoDir.exists()) {
+            File f = new File(repoDir, id + ".json");
+            try {
+                face = readFace(f);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return face;
+    }
+
+    public FaceData create(Bitmap bitmap, int rotationDegrees) {
+        FaceData face = new FaceData(getNewId());
+        face.initialize(this);
+
         Matrix m = new Matrix();
         m.postRotate(rotationDegrees);
         Bitmap corrected = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, false);
 
         File photo = new File(
                 photoDir,
-                getContinousFilename()
+                face.getImageName()
         );
-        String name = null;
         try{
             photo.getParentFile().mkdirs();
             photo.createNewFile();
             saveAsJpeg(corrected, photo);
-            name = photo.getName();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return name;
+
+        getAll().add(face);
+        save(face);
+
+        return face;
     }
 
     public void delete(FaceData face){
@@ -125,15 +145,10 @@ public class FaceRepository {
             photo.delete();
         }
         getAll().remove(face);
-        save();
     }
 
-    public void save() {
-        writeToFile();
-    }
-
-    private String getContinousFilename() {
-        return getNewId() + ".jpg";
+    public void save(FaceData face) {
+        writeToFile(face);
     }
 
     private String getNewId() {
@@ -154,13 +169,6 @@ public class FaceRepository {
                 e.printStackTrace();
             }
         }
-    }
-
-    public FaceData create() {
-        FaceData face = new FaceData();
-        face.initialize(this);
-        getAll().add(face);
-        return face;
     }
 
     public File getPhotoDir() {

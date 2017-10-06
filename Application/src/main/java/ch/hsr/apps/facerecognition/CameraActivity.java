@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import ch.hsr.apps.facerecognition.data.FaceData;
 import ch.hsr.apps.facerecognition.data.FaceRepository;
 import io.fotoapparat.Fotoapparat;
 import io.fotoapparat.FotoapparatSwitcher;
@@ -149,14 +150,14 @@ public class CameraActivity extends AppCompatActivity {
                 .toBitmap(scaled(0.25f))
                 .whenAvailable(result -> {
                     FaceRepository repo = FaceRepository.getFaceRepository(CameraActivity.this);
-                    String name = repo.saveImage(result.bitmap, -result.rotationDegrees);
-                    returnPhotoName(name);
+                    FaceData face = repo.create(result.bitmap, -result.rotationDegrees);
+                    returnPhotoName(face.getId());
                 });
     }
 
-    protected void returnPhotoName(String name) {
+    protected void returnPhotoName(String faceId) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("fileName", name);
+        returnIntent.putExtra("faceId", faceId);
         setResult(RESULT_OK, returnIntent);
         finish();
     }

@@ -37,8 +37,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class GalleryActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
     private final OkHttpClient client = new OkHttpClient();
+    private RecyclerView recyclerView;
     private ProgressDialog dlg;
     private Drawable personPlaceholderImage;
 
@@ -108,9 +108,7 @@ public class GalleryActivity extends AppCompatActivity {
         if (requestCode == CameraActivity.GET_FACE_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
                 FaceRepository repo = FaceRepository.getFaceRepository(this);
-                FaceData face = repo.create();
-                face.setImageName(data.getStringExtra("fileName"));
-                face.save();
+                FaceData face = repo.find(data.getStringExtra("faceId"));
                 reloadImages();
                 classifyFace(face);
             }
