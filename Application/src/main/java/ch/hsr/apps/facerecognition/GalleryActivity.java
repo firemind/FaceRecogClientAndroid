@@ -1,5 +1,6 @@
 package ch.hsr.apps.facerecognition;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,6 +26,7 @@ public class GalleryActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FaceRepository repo;
     private FaceService service;
+    private ProgressDialog dlg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,12 @@ public class GalleryActivity extends AppCompatActivity {
         button.setOnClickListener(view -> requestFacePhoto());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupRecyclerView();
+    }
+
     private void requestFacePhoto() {
         Intent cameraActivity = new Intent(GalleryActivity.this, CameraActivity.class);
         startActivityForResult(cameraActivity, CameraActivity.GET_FACE_PHOTO_REQUEST);
@@ -62,8 +70,26 @@ public class GalleryActivity extends AppCompatActivity {
         FaceAdapter adapter = new FaceAdapter(this, repo, new FaceAction() {
             @Override
             public void onFaceRepredict(String id) {
+                dlg = new ProgressDialog(GalleryActivity.this);
+                dlg.setMessage(getString(R.string.message_classifying_face));
+                dlg.show();
                 service.classifyFace(repo.find(id), GalleryActivity.this,
-                        GalleryActivity.this::showError);
+                        new FaceService.ClassifyCallback() {
+                            @Override
+                            public void onFailure(IOException e) {
+                                if (dlg.isShowing()) {
+                                    dlg.dismiss();
+                                }
+                                showError(e);
+                            }
+
+                            @Override
+                            public void onSuccess(FaceData faceData) {
+                                if (dlg.isShowing()) {
+                                    dlg.dismiss();
+                                }
+                            }
+                        });
             }
 
             @Override
@@ -101,10 +127,35 @@ public class GalleryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CameraActivity.GET_FACE_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
-                FaceData face = repo.find(data.getStringExtra("faceId"));
-                service.classifyFace(face, this, this::showError);
+                FaceData face = repo.find(data.getStringExtra(CameraActivity.FACE_ID));
+                dlg = new ProgressDialog(this);
+                dlg.setMessage(getString(R.string.message_classifying_face));
+                dlg.show();
+                service.classifyFace(face, this, new FaceService.ClassifyCallback() {
+                    @Override
+                    public void onFailure(IOException e) {
+                        if (dlg.isShowing()) {
+                            dlg.dismiss();
+                        }
+                        showError(e);
+                    }
+
+                    @Override
+                    public void onSuccess(FaceData faceData) {
+                        if (dlg.isShowing()) {
+                            dlg.dismiss();
+                        }
+                        startDetail(faceData);
+                    }
+                });
             }
         }
+    }
+
+    private void startDetail(FaceData face) {
+        Intent intent = new Intent(this, FaceDetailActivity.class);
+        intent.putExtra(FaceDetailActivity.FACE_ID, face.getId());
+        startActivity(intent);
     }
 
     protected void showError(IOException e) {

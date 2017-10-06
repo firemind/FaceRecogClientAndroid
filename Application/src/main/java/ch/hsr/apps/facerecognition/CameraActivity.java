@@ -51,8 +51,8 @@ import static io.fotoapparat.result.transformer.SizeTransformers.scaled;
 
 public class CameraActivity extends AppCompatActivity {
     public static final int GET_FACE_PHOTO_REQUEST = 1;
+    public static final String FACE_ID = "faceId";
     private static final String STATE_CAMERA_FRONT = "STATE_CAMERA_FRONT";
-
     private final PermissionsDelegate permissionsDelegate = new PermissionsDelegate(this);
     private boolean hasCameraPermission;
     private CameraView cameraView;
@@ -157,7 +157,7 @@ public class CameraActivity extends AppCompatActivity {
 
     protected void returnPhotoName(String faceId) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("faceId", faceId);
+        returnIntent.putExtra(FACE_ID, faceId);
         setResult(RESULT_OK, returnIntent);
         finish();
     }

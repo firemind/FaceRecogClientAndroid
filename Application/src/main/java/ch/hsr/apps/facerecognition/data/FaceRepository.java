@@ -7,6 +7,7 @@ import android.graphics.Matrix;
 import android.os.FileObserver;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -57,7 +58,11 @@ public class FaceRepository {
         observer = new FileObserver(repoDir.toString()) {
             @Override
             public void onEvent(int i, String fileName) {
+                if (fileName == null) {
+                    return;
+                }
                 String id = fileName.replace(".json", "");
+                Log.i("FileObserver", id);
                 switch (i) {
                     case FileObserver.DELETE:
                         repoListener.onDelete(id);

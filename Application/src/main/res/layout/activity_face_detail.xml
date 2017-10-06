@@ -32,6 +32,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:adjustViewBounds="true"
+            android:background="@drawable/person_placeholder"
             android:contentDescription="@string/person"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -40,12 +41,24 @@
             android:id="@+id/prediction_image"
             android:layout_width="@dimen/image_preview_width"
             android:layout_height="@dimen/image_preview_heigth"
-            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:adjustViewBounds="true"
+            android:background="@drawable/person_placeholder"
             android:contentDescription="@string/person"
-            app:layout_constraintRight_toRightOf="parent"
+            android:textSize="21sp"
+            app:layout_constraintStart_toEndOf="@+id/test_image"
             app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/prediction_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/prediction_label"
+            app:layout_constraintStart_toEndOf="@id/prediction_label"
+            tools:layout_editor_absoluteY="137dp" />
 
         <TextView
             android:id="@+id/prediction_label"
@@ -57,19 +70,19 @@
             app:layout_constraintTop_toBottomOf="@+id/test_image" />
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/tagNameLabel"
+            android:id="@+id/test_tag_label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch1">
+            app:layout_constraintTop_toBottomOf="@+id/switch_correct_prediction">
 
             <AutoCompleteTextView
-                android:id="@+id/tagName"
+                android:id="@+id/test_tag"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ems="10"
@@ -78,23 +91,24 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/action_submit_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="Submit"
-            app:layout_constraintBottom_toBottomOf="@+id/tagNameLabel"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/test_tag_label" />
 
         <Switch
-            android:id="@+id/switch1"
+            android:id="@+id/switch_correct_prediction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:checked="true"
-            android:text="Switch"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/test_image" />
+            android:text="Is it a match?"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/prediction_label" />
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

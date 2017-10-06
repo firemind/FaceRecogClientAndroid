@@ -2,4 +2,6 @@
 <resources>
     <dimen name="image_preview_width">120dp</dimen>
     <dimen name="image_preview_heigth">120dp</dimen>
+    <dimen name="image_detail_width">240dp</dimen>
+    <dimen name="image_detail_heigth">240dp</dimen>
 </resources>

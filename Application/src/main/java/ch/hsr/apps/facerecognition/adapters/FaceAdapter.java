@@ -96,8 +96,9 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         } else {
             holder.predictionLabel.setText(predictionLabel);
             holder.predictionScore.setText("" + (int) (face.getPredictionScore() * 100.) + "%");
-            holder.predictionScore.setVisibility(View.VISIBLE);
         }
+
+        holder.testLabel.setText(face.getTaggedLabel());
 
         Uri predictionImageUri = face.getPredictionImageUri();
         if (predictionImageUri != null){
