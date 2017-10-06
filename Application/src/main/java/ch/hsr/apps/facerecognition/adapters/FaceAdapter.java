@@ -104,7 +104,11 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         } else {
             holder.predictionImageView.setImageDrawable(personPlaceholderImage);
         }
-        holder.actionRepredict.setOnClickListener((view) -> action.onFaceRepredict(galleryList.get(i)));
+        holder.actionRepredict
+                .setOnClickListener((view) -> action.onFaceRepredict(galleryList.get(i)));
+        holder.actionDelete
+                .setOnClickListener((view) -> action.onFaceDelete(galleryList.get(i)));
+
     }
 
     private void renderToImageView(Uri uri, ImageView testImageView) {
@@ -128,6 +132,7 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         private TextView predictionLabel;
         private ImageView predictionImageView;
         private ImageButton actionRepredict;
+        private ImageButton actionDelete;
 
         ViewHolder(View view) {
             super(view);
@@ -137,8 +142,8 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
             predictionLabel = view.findViewById(R.id.prediction_label);
             predictionScore = view.findViewById(R.id.prediction_score);
             predictionImageView = view.findViewById(R.id.prediction_image);
-            actionRepredict = view.findViewById(R.id.action_repredict_image);
-
+            actionRepredict = view.findViewById(R.id.action_repredict_face);
+            actionDelete = view.findViewById(R.id.action_delete_face);
         }
     }
 }

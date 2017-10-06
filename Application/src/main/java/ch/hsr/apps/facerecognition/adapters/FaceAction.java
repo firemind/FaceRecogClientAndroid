@@ -8,6 +8,7 @@ import ch.hsr.apps.facerecognition.data.FaceData;
 
 public interface FaceAction {
     void onFaceRepredict(FaceData faceData);
-
     void onFaceInserted(int position);
+
+    void onFaceDelete(FaceData faceData);
 }

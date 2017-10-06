@@ -56,13 +56,14 @@ public class FaceRepository {
     public void registerListener(RepoListener repoListener) {
         observer = new FileObserver(repoDir.toString()) {
             @Override
-            public void onEvent(int i, String s) {
+            public void onEvent(int i, String fileName) {
+                String id = fileName.replace(".json", "");
                 switch (i) {
                     case FileObserver.DELETE:
-                        repoListener.onDelete(s);
+                        repoListener.onDelete(id);
                         break;
                     case FileObserver.MODIFY:
-                        repoListener.onModify(find(s));
+                        repoListener.onModify(find(id));
                         break;
                 }
             }
@@ -96,7 +97,7 @@ public class FaceRepository {
         FileWriter writer = null;
         try {
             repoDir.mkdir();
-            File f = new File(repoDir, face.getId() + ".json");
+            File f = getStoragePath(face);
             writer = new FileWriter(f, false);
             gson.toJson(face, writer);
             writer.close();
@@ -113,6 +114,11 @@ public class FaceRepository {
         }
     }
 
+    @NonNull
+    private File getStoragePath(FaceData face) {
+        return new File(repoDir, face.getId() + ".json");
+    }
+
     public List<FaceData> getAll(){
         List<FaceData> faceData = readAllFaces();
         Collections.sort(faceData);
@@ -120,8 +126,7 @@ public class FaceRepository {
     }
 
     public FaceData find(String id) {
-        id = (id.contains(".json")) ? id : id + ".json";
-        File f = new File(repoDir, id);
+        File f = new File(repoDir, id + ".json");
         FaceData face;
         try {
             face = readFace(f);
@@ -156,7 +161,7 @@ public class FaceRepository {
     }
 
     public void delete(FaceData face){
-        File faceFile = face.getImageFile();
+        File faceFile = getStoragePath(face);
         if (faceFile.exists()) {
             faceFile.delete();
         }

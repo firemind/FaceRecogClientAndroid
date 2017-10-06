@@ -82,6 +82,11 @@ public class GalleryActivity extends AppCompatActivity {
             public void onFaceInserted(int position) {
                 recyclerView.smoothScrollToPosition(position);
             }
+
+            @Override
+            public void onFaceDelete(FaceData faceData) {
+                repo.delete(faceData);
+            }
         });
         recyclerView.setAdapter(adapter);
     }
