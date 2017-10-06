@@ -30,7 +30,7 @@ import ch.hsr.apps.facerecognition.SettingsActivity;
  */
 
 public class FaceRepository {
-    private File repo;
+    private File repoDir;
     private File photoDir;
     private Gson gson;
     private List<FaceData> faces = null;
@@ -38,7 +38,7 @@ public class FaceRepository {
     private DateFormat filenameFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.ENGLISH);
 
     private FaceRepository(File home, String serverAddress) {
-        this.repo = new File(home, "faces.json");
+        this.repoDir = new File(home, "faces");
         this.photoDir = new File(home, "photos");
         this.serverAddress = serverAddress;
         gson = new Gson();
@@ -53,17 +53,14 @@ public class FaceRepository {
     }
 
     private void readFromFile() {
-        if (faces == null){
-            faces = new ArrayList<>();
-        }
+        faces = new ArrayList<>();
 
-        if (repo.exists()) {
+        if (repoDir.exists()) {
             try {
-                faces = new ArrayList<>(
-                        Arrays.asList(
-                                gson.fromJson(new FileReader(repo), FaceData[].class)));
-                for (FaceData f : faces){
-                    f.initialize(this);
+                for(File f : repoDir.listFiles()){
+                    FaceData face = gson.fromJson(new FileReader(f), FaceData.class);
+                    face.initialize(this);
+                    faces.add(face);
                 }
             } catch(FileNotFoundException e){
                 e.printStackTrace();
@@ -74,10 +71,13 @@ public class FaceRepository {
     private void writeToFile(){
         FileWriter writer = null;
         try {
-            repo.createNewFile();
-            writer = new FileWriter(repo, false);
-            gson.toJson(faces, writer);
-            writer.close();
+            repoDir.mkdir();
+            for (FaceData face : faces) {
+                File f = new File(repoDir, face.getImageName().replace("jpg", "json"));
+                writer = new FileWriter(f, false);
+                gson.toJson(face, writer);
+                writer.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -133,7 +133,11 @@ public class FaceRepository {
     }
 
     private String getContinousFilename() {
-        return filenameFormat.format(new Date()) + ".jpg";
+        return getNewId() + ".jpg";
+    }
+
+    private String getNewId() {
+        return filenameFormat.format(new Date());
     }
 
     private void saveAsJpeg(Bitmap bmp, File photo) throws FileNotFoundException {
