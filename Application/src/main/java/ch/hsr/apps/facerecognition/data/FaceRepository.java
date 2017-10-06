@@ -32,9 +32,8 @@ public class FaceRepository {
     private File repoDir;
     private File photoDir;
     private Gson gson;
-    private List<FaceData> faces = null;
     private String serverAddress;
-    private DateFormat filenameFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.ENGLISH);
+    private DateFormat idFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.ENGLISH);
 
     private FaceRepository(File home, String serverAddress) {
         this.repoDir = new File(home, "faces");
@@ -51,8 +50,8 @@ public class FaceRepository {
         return new FaceRepository(home, serverAddress);
     }
 
-    private void readAllFaces() {
-        faces = new ArrayList<>();
+    private List<FaceData> readAllFaces() {
+        ArrayList<FaceData> faces = new ArrayList<>();
 
         if (repoDir.exists()) {
             try {
@@ -63,6 +62,7 @@ public class FaceRepository {
                 e.printStackTrace();
             }
         }
+        return faces;
     }
 
     @NonNull
@@ -94,10 +94,7 @@ public class FaceRepository {
     }
 
     public List<FaceData> getAll(){
-        if (faces == null){
-            readAllFaces();
-        }
-        return faces;
+        return readAllFaces();
     }
 
     public FaceData find(String id) {
@@ -133,18 +130,19 @@ public class FaceRepository {
             e.printStackTrace();
         }
 
-        getAll().add(face);
         save(face);
-
         return face;
     }
 
     public void delete(FaceData face){
+        File faceFile = face.getImageFile();
+        if (faceFile.exists()) {
+            faceFile.delete();
+        }
         File photo = face.getImageFile();
         if (photo.exists()) {
             photo.delete();
         }
-        getAll().remove(face);
     }
 
     public void save(FaceData face) {
@@ -152,7 +150,7 @@ public class FaceRepository {
     }
 
     private String getNewId() {
-        return filenameFormat.format(new Date());
+        return idFormat.format(new Date());
     }
 
     private void saveAsJpeg(Bitmap bmp, File photo) throws FileNotFoundException {
