@@ -1,6 +1,7 @@
 package ch.hsr.apps.facerecognition.data;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 
@@ -8,7 +9,7 @@ import java.io.File;
  * Created by viruch on 27.09.17.
  */
 
-public class FaceData {
+public class FaceData implements Comparable<FaceData> {
     private String id;
     private double predictionScore;
     private String predictionLabel;
@@ -78,5 +79,10 @@ public class FaceData {
         this.repository = repository;
         photoDir = repository.getPhotoDir();
         serverAddress = repository.getServerAddress();
+    }
+
+    @Override
+    public int compareTo(@NonNull FaceData faceData) {
+        return faceData.getId().compareTo(getId());
     }
 }

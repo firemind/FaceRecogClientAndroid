@@ -1,6 +1,6 @@
 package ch.hsr.apps.facerecognition.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -18,6 +18,7 @@ import java.util.List;
 
 import ch.hsr.apps.facerecognition.R;
 import ch.hsr.apps.facerecognition.data.FaceData;
+import ch.hsr.apps.facerecognition.data.FaceRepository;
 
 /**
  * Created by viruch on 27.09.17.
@@ -25,19 +26,52 @@ import ch.hsr.apps.facerecognition.data.FaceData;
 
 public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
     private final FaceAction action;
-    private List<FaceData> galleryList;
-    private Context context;
-    private String notPredictedMessage;
-    private int image_width;
-    private int image_height;
-    private Drawable personPlaceholderImage;
+    private final List<FaceData> galleryList;
+    private final Activity activity;
+    private final String notPredictedMessage;
+    private final int image_width;
+    private final int image_height;
+    private final Drawable personPlaceholderImage;
 
-    public FaceAdapter(Context context, List<FaceData> galleryList, Drawable personPlaceholderImage, FaceAction action) {
-        this.galleryList = galleryList;
-        this.context = context;
+    public FaceAdapter(Activity activity, FaceRepository repo, FaceAction action) {
+        this.activity = activity;
         this.action = action;
-        this.personPlaceholderImage = personPlaceholderImage;
-        Resources res = context.getResources();
+        galleryList = repo.getAll();
+        repo.registerListener(new FaceRepository.RepoListener() {
+            @Override
+            public void onDelete(final String s) {
+                activity.runOnUiThread(() -> {
+                    for (int i = 0; i < galleryList.size(); i++) {
+                        FaceData f = galleryList.get(i);
+                        if (f.getId().equals(s)) {
+                            galleryList.remove(i);
+                            notifyItemRemoved(i);
+                            break;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onModify(final FaceData faceData) {
+                activity.runOnUiThread(() -> {
+                    for (int i = 0; i < galleryList.size(); i++) {
+                        FaceData f = galleryList.get(i);
+                        if (f.compareTo(faceData) == 0) {
+                            galleryList.set(i, faceData);
+                            notifyItemChanged(i);
+                            return;
+                        }
+                    }
+
+                    galleryList.add(0, faceData);
+                    notifyItemInserted(0);
+                    action.onFaceInserted(0);
+                });
+            }
+        });
+        Resources res = activity.getResources();
+        personPlaceholderImage = res.getDrawable(R.drawable.person_placeholder);
         notPredictedMessage = res.getString(R.string.not_predicted);
         image_width = (int) res.getDimension(R.dimen.image_preview_width);
         image_height = (int) res.getDimension(R.dimen.image_preview_heigth);
@@ -70,13 +104,11 @@ public class FaceAdapter extends RecyclerView.Adapter<FaceAdapter.ViewHolder> {
         } else {
             holder.predictionImageView.setImageDrawable(personPlaceholderImage);
         }
-        holder.actionRepredict.setOnClickListener((view) -> {
-            action.onFaceRepredict(galleryList.get(i));
-        });
+        holder.actionRepredict.setOnClickListener((view) -> action.onFaceRepredict(galleryList.get(i)));
     }
 
     private void renderToImageView(Uri uri, ImageView testImageView) {
-        Picasso.with(context)
+        Picasso.with(activity)
                 .load(uri)
                 .resize(image_width, image_height)
                 .centerCrop()

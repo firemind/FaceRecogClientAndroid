@@ -3,7 +3,6 @@ package ch.hsr.apps.facerecognition;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
@@ -20,9 +19,8 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.URLConnection;
-import java.util.Collections;
-import java.util.List;
 
+import ch.hsr.apps.facerecognition.adapters.FaceAction;
 import ch.hsr.apps.facerecognition.adapters.FaceAdapter;
 import ch.hsr.apps.facerecognition.data.ClassifyResponse;
 import ch.hsr.apps.facerecognition.data.FaceData;
@@ -40,7 +38,7 @@ public class GalleryActivity extends AppCompatActivity {
     private final OkHttpClient client = new OkHttpClient();
     private RecyclerView recyclerView;
     private ProgressDialog dlg;
-    private Drawable personPlaceholderImage;
+    private FaceRepository repo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +53,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         final AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
 
-        personPlaceholderImage = getDrawable(R.drawable.person_placeholder);
+        repo = FaceRepository.getFaceRepository(this);
 
         setupRecyclerView();
 
@@ -74,15 +72,18 @@ public class GalleryActivity extends AppCompatActivity {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage, this::classifyFace);
-        recyclerView.setAdapter(adapter);
-    }
+        FaceAdapter adapter = new FaceAdapter(this, repo, new FaceAction() {
+            @Override
+            public void onFaceRepredict(FaceData faceData) {
+                classifyFace(faceData);
+            }
 
-    public void reloadImages() {
-        super.onResume();
-        FaceAdapter adapter = new FaceAdapter(getApplicationContext(), prepareData(), personPlaceholderImage, this::classifyFace);
+            @Override
+            public void onFaceInserted(int position) {
+                recyclerView.smoothScrollToPosition(position);
+            }
+        });
         recyclerView.setAdapter(adapter);
-        recyclerView.invalidate();
     }
 
     @Override
@@ -107,9 +108,7 @@ public class GalleryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CameraActivity.GET_FACE_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
-                FaceRepository repo = FaceRepository.getFaceRepository(this);
                 FaceData face = repo.find(data.getStringExtra("faceId"));
-                reloadImages();
                 classifyFace(face);
             }
         }
@@ -160,7 +159,6 @@ public class GalleryActivity extends AppCompatActivity {
                     faceData.setPredictionScore(result.score);
                     faceData.setPredictionImagePath(result.image);
                     faceData.save();
-                    reloadImages();
                     if (dlg.isShowing()) {
                         dlg.dismiss();
                     }
@@ -168,13 +166,6 @@ public class GalleryActivity extends AppCompatActivity {
             }
         });
     }
-
-    private List<FaceData> prepareData() {
-        List<FaceData> faces = FaceRepository.getFaceRepository(this).getAll();
-        Collections.reverse(faces);
-        return faces;
-    }
-
 
     public void showError(final String text) {
         Snackbar.make(recyclerView, text, Snackbar.LENGTH_LONG).show();

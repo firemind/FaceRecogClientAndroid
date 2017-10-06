@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.os.FileObserver;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +35,7 @@ public class FaceRepository {
     private File photoDir;
     private Gson gson;
     private String serverAddress;
+    private FileObserver observer;
     private DateFormat idFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.ENGLISH);
 
     private FaceRepository(File home, String serverAddress) {
@@ -50,8 +53,25 @@ public class FaceRepository {
         return new FaceRepository(home, serverAddress);
     }
 
+    public void registerListener(RepoListener repoListener) {
+        observer = new FileObserver(repoDir.toString()) {
+            @Override
+            public void onEvent(int i, String s) {
+                switch (i) {
+                    case FileObserver.DELETE:
+                        repoListener.onDelete(s);
+                        break;
+                    case FileObserver.MODIFY:
+                        repoListener.onModify(find(s));
+                        break;
+                }
+            }
+        };
+        observer.startWatching();
+    }
+
     private List<FaceData> readAllFaces() {
-        ArrayList<FaceData> faces = new ArrayList<>();
+        List<FaceData> faces = new ArrayList<>();
 
         if (repoDir.exists()) {
             try {
@@ -94,18 +114,19 @@ public class FaceRepository {
     }
 
     public List<FaceData> getAll(){
-        return readAllFaces();
+        List<FaceData> faceData = readAllFaces();
+        Collections.sort(faceData);
+        return faceData;
     }
 
     public FaceData find(String id) {
-        FaceData face = null;
-        if (repoDir.exists()) {
-            File f = new File(repoDir, id + ".json");
-            try {
-                face = readFace(f);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+        id = (id.contains(".json")) ? id : id + ".json";
+        File f = new File(repoDir, id);
+        FaceData face;
+        try {
+            face = readFace(f);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
         return face;
     }
@@ -175,5 +196,11 @@ public class FaceRepository {
 
     public String getServerAddress() {
         return serverAddress;
+    }
+
+    public interface RepoListener {
+        void onDelete(String s);
+
+        void onModify(FaceData faceData);
     }
 }
